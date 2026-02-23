@@ -7,9 +7,15 @@
  * Usage: node scripts/seed-emulator.js
  */
 
+require('dotenv').config({ path: '.env.local' });
+
 const { initializeApp } = require('firebase/app');
 const { getAuth, createUserWithEmailAndPassword, connectAuthEmulator } = require('firebase/auth');
 const { getFirestore, doc, setDoc, Timestamp, connectFirestoreEmulator } = require('firebase/firestore');
+
+// Admin credentials from .env.local (fallback to defaults)
+const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL || 'admin@test.com';
+const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD || 'password123';
 
 // Initialize Firebase with dummy config for emulator
 const app = initializeApp({
@@ -32,8 +38,8 @@ async function seedData() {
     console.log('1️⃣  Creating admin user...');
     const userCredential = await createUserWithEmailAndPassword(
       auth,
-      'admin@test.com',
-      'password123'
+      ADMIN_EMAIL,
+      ADMIN_PASSWORD
     );
     const uid = userCredential.user.uid;
     console.log('   ✅ Admin user created with UID:', uid);
@@ -41,7 +47,7 @@ async function seedData() {
     // 2. Add admin user document
     console.log('\n2️⃣  Creating admin user document in Firestore...');
     await setDoc(doc(db, 'adminUsers', uid), {
-      email: 'admin@test.com',
+      email: ADMIN_EMAIL,
       fullName: 'Test Admin',
       role: 'super_admin',
       isActive: true,
@@ -225,8 +231,8 @@ async function seedData() {
 
     console.log('\n✅ Seed data completed successfully!\n');
     console.log('📝 Test Credentials:');
-    console.log('   Email: admin@test.com');
-    console.log('   Password: password123\n');
+    console.log(`   Email: ${ADMIN_EMAIL}`);
+    console.log(`   Password: ${ADMIN_PASSWORD}\n`);
     console.log('🌐 Access the website at: http://localhost:3000/en');
     console.log('🔐 Admin login at: http://localhost:3000/login');
     console.log('🔧 Emulator UI at: http://localhost:4000\n');

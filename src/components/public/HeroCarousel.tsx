@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLocale } from 'next-intl';
 import { useCollection } from '@/hooks/useFirestore';
@@ -9,16 +8,37 @@ import { where, orderBy } from 'firebase/firestore';
 import type { HeroImage } from '@/types';
 import { cn } from '@/lib/utils';
 
+const BYPASS = process.env.NEXT_PUBLIC_BYPASS_AUTH === 'true';
+const LS_KEY = 'bypass_hero_images';
+
+function loadBypassImages(): HeroImage[] {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    const all: HeroImage[] = raw ? JSON.parse(raw) : [];
+    return all.filter((img) => img.isActive).sort((a, b) => a.displayOrder - b.displayOrder);
+  } catch {
+    return [];
+  }
+}
+
 export function HeroCarousel() {
   const locale = useLocale();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [bypassImages, setBypassImages] = useState<HeroImage[]>([]);
 
-  // Fetch active hero images from Firestore
-  const { data: heroImages, loading } = useCollection<HeroImage>('heroImages', [
-    where('isActive', '==', true),
-    orderBy('displayOrder', 'asc'),
-  ]);
+  // Load bypass images from localStorage on mount
+  useEffect(() => {
+    if (BYPASS) setBypassImages(loadBypassImages());
+  }, []);
+
+  // Firestore (only used when NOT in bypass mode)
+  const { data: firestoreImages, loading } = useCollection<HeroImage>(
+    'heroImages',
+    BYPASS ? [] : [where('isActive', '==', true), orderBy('displayOrder', 'asc')]
+  );
+
+  const heroImages = BYPASS ? bypassImages : firestoreImages;
 
   const currentImage = heroImages[currentIndex];
 
@@ -46,7 +66,7 @@ export function HeroCarousel() {
     setCurrentIndex(index);
   }, []);
 
-  if (loading) {
+  if (!BYPASS && loading) {
     return (
       <div className="relative h-[400px] w-full animate-pulse bg-muted md:h-[500px] lg:h-[600px]" />
     );
@@ -83,12 +103,10 @@ export function HeroCarousel() {
             index === currentIndex ? 'opacity-100' : 'opacity-0'
           )}
         >
-          <Image
+          <img
             src={image.imageUrl}
             alt={locale === 'ne' ? image.altTextNe || image.altText : image.altText}
-            fill
-            className="object-cover"
-            priority={index === 0}
+            className="h-full w-full object-cover"
           />
 
           {/* Overlay Gradient */}
