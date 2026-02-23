@@ -22,6 +22,48 @@ import {
 } from 'firebase/firestore';
 import { db } from './config';
 
+// ─── Bypass localStorage store (no Firebase needed) ──────────────────────────
+const BYPASS = process.env.NEXT_PUBLIC_BYPASS_AUTH === 'true';
+
+function bpKey(col: string) { return `bypass_${col}`; }
+
+function bpGetAll(col: string): any[] {
+  if (typeof window === 'undefined') return [];
+  try { return JSON.parse(localStorage.getItem(bpKey(col)) || '[]'); } catch { return []; }
+}
+
+function bpSave(col: string, docs: any[]) {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(bpKey(col), JSON.stringify(docs));
+}
+
+function bpAdd(col: string, data: any): string {
+  const docs = bpGetAll(col);
+  const id = `bp_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+  const now = new Date().toISOString();
+  // strip any serverTimestamp sentinels (they stringify as {})
+  const clean = JSON.parse(JSON.stringify({ ...data, id, createdAt: now, updatedAt: now }));
+  docs.unshift(clean); // newest first
+  bpSave(col, docs);
+  return id;
+}
+
+function bpUpdate(col: string, id: string, data: any) {
+  const docs = bpGetAll(col).map((d) =>
+    d.id === id ? { ...d, ...JSON.parse(JSON.stringify(data)), updatedAt: new Date().toISOString() } : d
+  );
+  bpSave(col, docs);
+}
+
+function bpDelete(col: string, id: string) {
+  bpSave(col, bpGetAll(col).filter((d) => d.id !== id));
+}
+
+function bpGet(col: string, id: string): any | null {
+  return bpGetAll(col).find((d) => d.id === id) ?? null;
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 /**
  * Get a single document by ID
  */
@@ -29,14 +71,13 @@ export async function getDocument<T = DocumentData>(
   collectionName: string,
   docId: string
 ): Promise<T | null> {
+  if (BYPASS) return bpGet(collectionName, docId) as T | null;
   try {
     const docRef = doc(db, collectionName, docId);
     const docSnap = await getDoc(docRef);
-
     if (docSnap.exists()) {
       return { id: docSnap.id, ...docSnap.data() } as T;
     }
-
     return null;
   } catch (error) {
     console.error(`Error getting document from ${collectionName}:`, error);
@@ -51,11 +92,11 @@ export async function getDocuments<T = DocumentData>(
   collectionName: string,
   constraints: QueryConstraint[] = []
 ): Promise<T[]> {
+  if (BYPASS) return bpGetAll(collectionName) as T[];
   try {
     const collectionRef = collection(db, collectionName);
     const q = query(collectionRef, ...constraints);
     const querySnapshot = await getDocs(q);
-
     return querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
@@ -73,6 +114,7 @@ export async function addDocument<T = DocumentData>(
   collectionName: string,
   data: T
 ): Promise<string> {
+  if (BYPASS) return bpAdd(collectionName, data);
   try {
     const docData = {
       ...data,
@@ -96,6 +138,7 @@ export async function updateDocument<T = Partial<DocumentData>>(
   docId: string,
   data: T
 ): Promise<void> {
+  if (BYPASS) { bpUpdate(collectionName, docId, data); return; }
   try {
     const docRef = doc(db, collectionName, docId);
     await updateDoc(docRef, {
@@ -112,6 +155,7 @@ export async function updateDocument<T = Partial<DocumentData>>(
  * Delete a document
  */
 export async function deleteDocument(collectionName: string, docId: string): Promise<void> {
+  if (BYPASS) { bpDelete(collectionName, docId); return; }
   try {
     const docRef = doc(db, collectionName, docId);
     await deleteDoc(docRef);
@@ -239,6 +283,10 @@ export function subscribeToCollection<T = DocumentData>(
   constraints: QueryConstraint[],
   callback: (data: T[]) => void
 ): Unsubscribe {
+  if (BYPASS) {
+    callback(bpGetAll(collectionName) as T[]);
+    return () => {};
+  }
   const collectionRef = collection(db, collectionName);
   const q = query(collectionRef, ...constraints);
 
