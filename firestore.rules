@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.isActive == true;
+    }
+
+    // Hero Images - Public read, admin write
+    match /heroImages/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Announcements - Published content is public, admin can see all
+    match /announcements/{document} {
+      allow read: if resource.data.isPublished == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Events - Published content is public, admin can see all
+    match /events/{document} {
+      allow read: if resource.data.isPublished == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Programs - Published content is public, admin can see all
+    match /programs/{document} {
+      allow read: if resource.data.isPublished == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Contact Messages - Anyone can create, only admin can read/update
+    match /contactMessages/{document} {
+      allow read: if isAdmin();
+      allow create: if true; // Anyone can submit contact form
+      allow update, delete: if isAdmin();
+    }
+
+    // Admin Users - Users can read their own data only
+    match /adminUsers/{userId} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if false; // Only manage through Firebase Console or Cloud Functions
+    }
+
+    // Site Settings - Public read, admin write
+    match /siteSettings/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

@@ -1,0 +1,56 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated();
+    }
+
+    function isImageFile() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function isPdfFile() {
+      return request.resource.contentType == 'application/pdf';
+    }
+
+    function isValidSize() {
+      return request.resource.size < 10 * 1024 * 1024; // 10MB max
+    }
+
+    // Hero images - Public read, admin write
+    match /hero-images/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && isImageFile() && isValidSize();
+    }
+
+    // Announcements - Public read, admin write
+    match /announcements/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && (isImageFile() || isPdfFile()) && isValidSize();
+    }
+
+    // Events - Public read, admin write
+    match /events/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && isImageFile() && isValidSize();
+    }
+
+    // Programs - Public read, admin write
+    match /programs/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && (isImageFile() || isPdfFile()) && isValidSize();
+    }
+
+    // Media library - Public read, admin write
+    match /media/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidSize();
+    }
+  }
+}

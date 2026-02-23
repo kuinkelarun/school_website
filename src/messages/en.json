@@ -1,0 +1,241 @@
+{
+  "common": {
+    "readMore": "Read More",
+    "learnMore": "Learn More",
+    "viewAll": "View All",
+    "backToHome": "Back to Home",
+    "loading": "Loading...",
+    "search": "Search",
+    "filter": "Filter",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "upload": "Upload",
+    "download": "Download"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "announcements": "Announcements",
+    "programs": "Programs",
+    "events": "Events",
+    "contact": "Contact",
+    "admissions": "Admissions",
+    "admin": "Admin"
+  },
+  "home": {
+    "title": "Welcome to Our School",
+    "latestAnnouncements": "Latest Announcements",
+    "upcomingEvents": "Upcoming Events",
+    "ourPrograms": "Our Programs",
+    "aboutUs": "About Us",
+    "quickLinks": "Quick Links"
+  },
+  "about": {
+    "title": "About Our School",
+    "mission": "Mission",
+    "vision": "Vision",
+    "history": "History",
+    "leadership": "Leadership",
+    "achievements": "Achievements"
+  },
+  "announcements": {
+    "title": "Announcements",
+    "noAnnouncements": "No announcements available at this time.",
+    "categories": {
+      "all": "All",
+      "general": "General",
+      "academic": "Academic",
+      "events": "Events",
+      "urgent": "Urgent"
+    },
+    "featured": "Featured",
+    "publishedOn": "Published on",
+    "by": "by",
+    "attachments": "Attachments",
+    "backToList": "Back to Announcements"
+  },
+  "programs": {
+    "title": "Academic Programs",
+    "categories": {
+      "all": "All Programs",
+      "science": "Science",
+      "commerce": "Commerce",
+      "arts": "Arts",
+      "other": "Other"
+    },
+    "objectives": "Objectives",
+    "curriculum": "Curriculum",
+    "downloadCurriculum": "Download Curriculum"
+  },
+  "events": {
+    "title": "Events",
+    "calendar": "Calendar View",
+    "list": "List View",
+    "noEvents": "No upcoming events.",
+    "location": "Location",
+    "date": "Date",
+    "time": "Time",
+    "categories": {
+      "all": "All Events",
+      "academic": "Academic",
+      "sports": "Sports",
+      "cultural": "Cultural",
+      "other": "Other"
+    },
+    "exportCalendar": "Export to Calendar"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "getInTouch": "Get in Touch",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send Message",
+    "successMessage": "Thank you! Your message has been sent successfully. We'll get back to you soon.",
+    "errorMessage": "Sorry, there was an error sending your message. Please try again.",
+    "address": "Address",
+    "officeHours": "Office Hours",
+    "socialMedia": "Follow Us"
+  },
+  "footer": {
+    "quickLinks": "Quick Links",
+    "contactInfo": "Contact Information",
+    "followUs": "Follow Us",
+    "copyright": "© 2026 School Name. All rights reserved.",
+    "poweredBy": "Powered by Next.js & Firebase"
+  },
+  "admin": {
+    "login": {
+      "title": "Admin Login",
+      "email": "Email",
+      "password": "Password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "signIn": "Sign In",
+      "invalidCredentials": "Invalid email or password",
+      "accountLocked": "Account is locked. Please contact administrator."
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Welcome back",
+      "statistics": "Statistics",
+      "totalAnnouncements": "Total Announcements",
+      "totalEvents": "Total Events",
+      "totalPrograms": "Total Programs",
+      "unreadMessages": "Unread Messages",
+      "recentActivity": "Recent Activity",
+      "quickActions": "Quick Actions"
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "heroImages": "Hero Images",
+      "announcements": "Announcements",
+      "events": "Events",
+      "programs": "Programs",
+      "media": "Media Library",
+      "settings": "Settings",
+      "logout": "Logout"
+    },
+    "heroImages": {
+      "title": "Hero Images Management",
+      "uploadNew": "Upload New Image",
+      "reorder": "Drag to reorder",
+      "altText": "Alt Text (English)",
+      "altTextNe": "Alt Text (Nepali)",
+      "overlayText": "Overlay Text (English)",
+      "overlayTextNe": "Overlay Text (Nepali)",
+      "duration": "Display Duration (seconds)",
+      "active": "Active",
+      "confirmDelete": "Are you sure you want to delete this hero image?",
+      "uploadSuccess": "Hero image uploaded successfully",
+      "updateSuccess": "Hero image updated successfully",
+      "deleteSuccess": "Hero image deleted successfully"
+    },
+    "announcements": {
+      "title": "Announcements Management",
+      "createNew": "Create New Announcement",
+      "editAnnouncement": "Edit Announcement",
+      "titleEn": "Title (English)",
+      "titleNe": "Title (Nepali)",
+      "contentEn": "Content (English)",
+      "contentNe": "Content (Nepali)",
+      "category": "Category",
+      "featured": "Featured",
+      "published": "Published",
+      "draft": "Draft",
+      "uploadImage": "Upload Image",
+      "addAttachments": "Add Attachments",
+      "createSuccess": "Announcement created successfully",
+      "updateSuccess": "Announcement updated successfully",
+      "deleteSuccess": "Announcement deleted successfully",
+      "confirmDelete": "Are you sure you want to delete this announcement?"
+    },
+    "events": {
+      "title": "Events Management",
+      "createNew": "Create New Event",
+      "editEvent": "Edit Event",
+      "titleEn": "Title (English)",
+      "titleNe": "Title (Nepali)",
+      "descriptionEn": "Description (English)",
+      "descriptionNe": "Description (Nepali)",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "location": "Location",
+      "category": "Category",
+      "published": "Published",
+      "createSuccess": "Event created successfully",
+      "updateSuccess": "Event updated successfully",
+      "deleteSuccess": "Event deleted successfully",
+      "confirmDelete": "Are you sure you want to delete this event?"
+    },
+    "programs": {
+      "title": "Programs Management",
+      "createNew": "Create New Program",
+      "editProgram": "Edit Program",
+      "titleEn": "Title (English)",
+      "titleNe": "Title (Nepali)",
+      "descriptionEn": "Description (English)",
+      "descriptionNe": "Description (Nepali)",
+      "objectivesEn": "Objectives (English)",
+      "objectivesNe": "Objectives (Nepali)",
+      "category": "Category",
+      "displayOrder": "Display Order",
+      "uploadCurriculum": "Upload Curriculum PDF",
+      "published": "Published",
+      "createSuccess": "Program created successfully",
+      "updateSuccess": "Program updated successfully",
+      "deleteSuccess": "Program deleted successfully",
+      "confirmDelete": "Are you sure you want to delete this program?"
+    },
+    "media": {
+      "title": "Media Library",
+      "uploadFiles": "Upload Files",
+      "filterByType": "Filter by type",
+      "allFiles": "All Files",
+      "images": "Images",
+      "documents": "Documents",
+      "fileName": "File Name",
+      "fileSize": "File Size",
+      "uploadDate": "Upload Date",
+      "copyUrl": "Copy URL",
+      "uploadSuccess": "File uploaded successfully",
+      "deleteSuccess": "File deleted successfully",
+      "confirmDelete": "Are you sure you want to delete this file?"
+    },
+    "validation": {
+      "required": "This field is required",
+      "invalidEmail": "Invalid email address",
+      "minLength": "Minimum {min} characters required",
+      "maxLength": "Maximum {max} characters allowed",
+      "invalidUrl": "Invalid URL",
+      "invalidFileType": "Invalid file type",
+      "fileTooLarge": "File size exceeds maximum limit"
+    }
+  }
+}

@@ -1,0 +1,241 @@
+{
+  "common": {
+    "readMore": "थप पढ्नुहोस्",
+    "learnMore": "थप जान्नुहोस्",
+    "viewAll": "सबै हेर्नुहोस्",
+    "backToHome": "गृहपृष्ठमा फर्कनुहोस्",
+    "loading": "लोड हुँदैछ...",
+    "search": "खोज्नुहोस्",
+    "filter": "फिल्टर",
+    "submit": "पेश गर्नुहोस्",
+    "cancel": "रद्द गर्नुहोस्",
+    "save": "बचत गर्नुहोस्",
+    "delete": "मेटाउनुहोस्",
+    "edit": "सम्पादन गर्नुहोस्",
+    "close": "बन्द गर्नुहोस्",
+    "upload": "अपलोड गर्नुहोस्",
+    "download": "डाउनलोड गर्नुहोस्"
+  },
+  "nav": {
+    "home": "गृहपृष्ठ",
+    "about": "हाम्रो बारेमा",
+    "announcements": "सूचनाहरू",
+    "programs": "कार्यक्रमहरू",
+    "events": "घटनाहरू",
+    "contact": "सम्पर्क",
+    "admissions": "भर्ना",
+    "admin": "व्यवस्थापन"
+  },
+  "home": {
+    "title": "हाम्रो विद्यालयमा स्वागत छ",
+    "latestAnnouncements": "नवीनतम सूचनाहरू",
+    "upcomingEvents": "आगामी घटनाहरू",
+    "ourPrograms": "हाम्रा कार्यक्रमहरू",
+    "aboutUs": "हाम्रो बारेमा",
+    "quickLinks": "द्रुत लिङ्कहरू"
+  },
+  "about": {
+    "title": "हाम्रो विद्यालयको बारेमा",
+    "mission": "उद्देश्य",
+    "vision": "दृष्टिकोण",
+    "history": "इतिहास",
+    "leadership": "नेतृत्व",
+    "achievements": "उपलब्धिहरू"
+  },
+  "announcements": {
+    "title": "सूचनाहरू",
+    "noAnnouncements": "यस समय कुनै सूचना उपलब्ध छैन।",
+    "categories": {
+      "all": "सबै",
+      "general": "सामान्य",
+      "academic": "शैक्षिक",
+      "events": "घटनाहरू",
+      "urgent": "जरुरी"
+    },
+    "featured": "विशेष",
+    "publishedOn": "प्रकाशित मिति",
+    "by": "द्वारा",
+    "attachments": "संलग्नकहरू",
+    "backToList": "सूचनाहरूमा फर्कनुहोस्"
+  },
+  "programs": {
+    "title": "शैक्षिक कार्यक्रमहरू",
+    "categories": {
+      "all": "सबै कार्यक्रमहरू",
+      "science": "विज्ञान",
+      "commerce": "वाणिज्य",
+      "arts": "कला",
+      "other": "अन्य"
+    },
+    "objectives": "उद्देश्यहरू",
+    "curriculum": "पाठ्यक्रम",
+    "downloadCurriculum": "पाठ्यक्रम डाउनलोड गर्नुहोस्"
+  },
+  "events": {
+    "title": "घटनाहरू",
+    "calendar": "क्यालेन्डर दृश्य",
+    "list": "सूची दृश्य",
+    "noEvents": "आगामी घटनाहरू छैनन्।",
+    "location": "स्थान",
+    "date": "मिति",
+    "time": "समय",
+    "categories": {
+      "all": "सबै घटनाहरू",
+      "academic": "शैक्षिक",
+      "sports": "खेलकुद",
+      "cultural": "सांस्कृतिक",
+      "other": "अन्य"
+    },
+    "exportCalendar": "क्यालेन्डरमा निर्यात गर्नुहोस्"
+  },
+  "contact": {
+    "title": "हामीलाई सम्पर्क गर्नुहोस्",
+    "getInTouch": "सम्पर्कमा रहनुहोस्",
+    "name": "नाम",
+    "email": "इमेल",
+    "phone": "फोन",
+    "subject": "विषय",
+    "message": "सन्देश",
+    "send": "सन्देश पठाउनुहोस्",
+    "successMessage": "धन्यवाद! तपाईंको सन्देश सफलतापूर्वक पठाइएको छ। हामी चाँडै तपाईंलाई सम्पर्क गर्नेछौं।",
+    "errorMessage": "माफ गर्नुहोस्, तपाईंको सन्देश पठाउन त्रुटि भयो। कृपया पुन: प्रयास गर्नुहोस्।",
+    "address": "ठेगाना",
+    "officeHours": "कार्यालय समय",
+    "socialMedia": "हामीलाई फलो गर्नुहोस्"
+  },
+  "footer": {
+    "quickLinks": "द्रुत लिङ्कहरू",
+    "contactInfo": "सम्पर्क जानकारी",
+    "followUs": "हामीलाई फलो गर्नुहोस्",
+    "copyright": "© २०२६ विद्यालय नाम। सर्वाधिकार सुरक्षित।",
+    "poweredBy": "Next.js र Firebase द्वारा संचालित"
+  },
+  "admin": {
+    "login": {
+      "title": "व्यवस्थापक लगइन",
+      "email": "इमेल",
+      "password": "पासवर्ड",
+      "rememberMe": "मलाई सम्झनुहोस्",
+      "forgotPassword": "पासवर्ड बिर्सनुभयो?",
+      "signIn": "साइन इन गर्नुहोस्",
+      "invalidCredentials": "अमान्य इमेल वा पासवर्ड",
+      "accountLocked": "खाता लक गरिएको छ। कृपया व्यवस्थापकलाई सम्पर्क गर्नुहोस्।"
+    },
+    "dashboard": {
+      "title": "ड्यासबोर्ड",
+      "welcome": "फेरि स्वागत छ",
+      "statistics": "तथ्याङ्क",
+      "totalAnnouncements": "कुल सूचनाहरू",
+      "totalEvents": "कुल घटनाहरू",
+      "totalPrograms": "कुल कार्यक्रमहरू",
+      "unreadMessages": "नपढिएका सन्देशहरू",
+      "recentActivity": "हालैका गतिविधिहरू",
+      "quickActions": "द्रुत कार्यहरू"
+    },
+    "nav": {
+      "dashboard": "ड्यासबोर्ड",
+      "heroImages": "हिरो छविहरू",
+      "announcements": "सूचनाहरू",
+      "events": "घटनाहरू",
+      "programs": "कार्यक्रमहरू",
+      "media": "मिडिया पुस्तकालय",
+      "settings": "सेटिङहरू",
+      "logout": "लगआउट"
+    },
+    "heroImages": {
+      "title": "हिरो छविहरू व्यवस्थापन",
+      "uploadNew": "नयाँ छवि अपलोड गर्नुहोस्",
+      "reorder": "पुन: क्रमबद्ध गर्न तान्नुहोस्",
+      "altText": "वैकल्पिक पाठ (अंग्रेजी)",
+      "altTextNe": "वैकल्पिक पाठ (नेपाली)",
+      "overlayText": "ओभरले पाठ (अंग्रेजी)",
+      "overlayTextNe": "ओभरले पाठ (नेपाली)",
+      "duration": "प्रदर्शन अवधि (सेकेन्ड)",
+      "active": "सक्रिय",
+      "confirmDelete": "के तपाईं यो हिरो छवि मेटाउन निश्चित हुनुहुन्छ?",
+      "uploadSuccess": "हिरो छवि सफलतापूर्वक अपलोड गरियो",
+      "updateSuccess": "हिरो छवि सफलतापूर्वक अपडेट गरियो",
+      "deleteSuccess": "हिरो छवि सफलतापूर्वक मेटाइयो"
+    },
+    "announcements": {
+      "title": "सूचनाहरू व्यवस्थापन",
+      "createNew": "नयाँ सूचना सिर्जना गर्नुहोस्",
+      "editAnnouncement": "सूचना सम्पादन गर्नुहोस्",
+      "titleEn": "शीर्षक (अंग्रेजी)",
+      "titleNe": "शीर्षक (नेपाली)",
+      "contentEn": "सामग्री (अंग्रेजी)",
+      "contentNe": "सामग्री (नेपाली)",
+      "category": "श्रेणी",
+      "featured": "विशेष",
+      "published": "प्रकाशित",
+      "draft": "मस्यौदा",
+      "uploadImage": "छवि अपलोड गर्नुहोस्",
+      "addAttachments": "संलग्नकहरू थप्नुहोस्",
+      "createSuccess": "सूचना सफलतापूर्वक सिर्जना गरियो",
+      "updateSuccess": "सूचना सफलतापूर्वक अपडेट गरियो",
+      "deleteSuccess": "सूचना सफलतापूर्वक मेटाइयो",
+      "confirmDelete": "के तपाईं यो सूचना मेटाउन निश्चित हुनुहुन्छ?"
+    },
+    "events": {
+      "title": "घटनाहरू व्यवस्थापन",
+      "createNew": "नयाँ घटना सिर्जना गर्नुहोस्",
+      "editEvent": "घटना सम्पादन गर्नुहोस्",
+      "titleEn": "शीर्षक (अंग्रेजी)",
+      "titleNe": "शीर्षक (नेपाली)",
+      "descriptionEn": "विवरण (अंग्रेजी)",
+      "descriptionNe": "विवरण (नेपाली)",
+      "startDate": "सुरु मिति",
+      "endDate": "अन्त्य मिति",
+      "location": "स्थान",
+      "category": "श्रेणी",
+      "published": "प्रकाशित",
+      "createSuccess": "घटना सफलतापूर्वक सिर्जना गरियो",
+      "updateSuccess": "घटना सफलतापूर्वक अपडेट गरियो",
+      "deleteSuccess": "घटना सफलतापूर्वक मेटाइयो",
+      "confirmDelete": "के तपाईं यो घटना मेटाउन निश्चित हुनुहुन्छ?"
+    },
+    "programs": {
+      "title": "कार्यक्रमहरू व्यवस्थापन",
+      "createNew": "नयाँ कार्यक्रम सिर्जना गर्नुहोस्",
+      "editProgram": "कार्यक्रम सम्पादन गर्नुहोस्",
+      "titleEn": "शीर्षक (अंग्रेजी)",
+      "titleNe": "शीर्षक (नेपाली)",
+      "descriptionEn": "विवरण (अंग्रेजी)",
+      "descriptionNe": "विवरण (नेपाली)",
+      "objectivesEn": "उद्देश्यहरू (अंग्रेजी)",
+      "objectivesNe": "उद्देश्यहरू (नेपाली)",
+      "category": "श्रेणी",
+      "displayOrder": "प्रदर्शन क्रम",
+      "uploadCurriculum": "पाठ्यक्रम PDF अपलोड गर्नुहोस्",
+      "published": "प्रकाशित",
+      "createSuccess": "कार्यक्रम सफलतापूर्वक सिर्जना गरियो",
+      "updateSuccess": "कार्यक्रम सफलतापूर्वक अपडेट गरियो",
+      "deleteSuccess": "कार्यक्रम सफलतापूर्वक मेटाइयो",
+      "confirmDelete": "के तपाईं यो कार्यक्रम मेटाउन निश्चित हुनुहुन्छ?"
+    },
+    "media": {
+      "title": "मिडिया पुस्तकालय",
+      "uploadFiles": "फाइलहरू अपलोड गर्नुहोस्",
+      "filterByType": "प्रकार अनुसार फिल्टर गर्नुहोस्",
+      "allFiles": "सबै फाइलहरू",
+      "images": "छविहरू",
+      "documents": "कागजातहरू",
+      "fileName": "फाइल नाम",
+      "fileSize": "फाइल आकार",
+      "uploadDate": "अपलोड मिति",
+      "copyUrl": "URL प्रतिलिपि गर्नुहोस्",
+      "uploadSuccess": "फाइल सफलतापूर्वक अपलोड गरियो",
+      "deleteSuccess": "फाइल सफलतापूर्वक मेटाइयो",
+      "confirmDelete": "के तपाईं यो फाइल मेटाउन निश्चित हुनुहुन्छ?"
+    },
+    "validation": {
+      "required": "यो फिल्ड आवश्यक छ",
+      "invalidEmail": "अमान्य इमेल ठेगाना",
+      "minLength": "न्यूनतम {min} वर्णहरू आवश्यक छ",
+      "maxLength": "अधिकतम {max} वर्णहरू अनुमति छ",
+      "invalidUrl": "अमान्य URL",
+      "invalidFileType": "अमान्य फाइल प्रकार",
+      "fileTooLarge": "फाइल आकार अधिकतम सीमा भन्दा बढी छ"
+    }
+  }
+}

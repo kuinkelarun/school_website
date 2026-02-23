@@ -1,26 +1,142 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* School Branding Colors */
+  --primary: 139 0 0; /* Deep Red (#8B0000) */
+  --primary-foreground: 255 255 255; /* White */
+  --secondary: 44 62 80; /* Dark Blue-Gray (#2C3E50) */
+  --secondary-foreground: 255 255 255; /* White */
+  --accent: 231 76 60; /* Bright Red (#E74C3C) */
+  --accent-foreground: 255 255 255; /* White */
+
+  /* Neutral Colors */
+  --background: 255 255 255; /* White */
+  --foreground: 44 62 80; /* Dark Gray */
+  --muted: 236 240 241; /* Light Gray (#ECF0F1) */
+  --muted-foreground: 127 140 141; /* Medium Gray */
+  --card: 255 255 255;
+  --card-foreground: 44 62 80;
+  --popover: 255 255 255;
+  --popover-foreground: 44 62 80;
+
+  /* Semantic Colors */
+  --success: 39 174 96; /* Green (#27AE60) */
+  --warning: 243 156 18; /* Orange (#F39C12) */
+  --error: 231 76 60; /* Red (#E74C3C) */
+  --info: 52 152 219; /* Blue (#3498DB) */
+
+  /* Border and Input */
+  --border: 236 240 241;
+  --input: 236 240 241;
+  --ring: 139 0 0; /* Primary color for focus rings */
+
+  /* Radius */
+  --radius: 0.5rem;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: rgb(var(--primary));
+  --color-primary-foreground: rgb(var(--primary-foreground));
+  --color-secondary: rgb(var(--secondary));
+  --color-secondary-foreground: rgb(var(--secondary-foreground));
+  --color-accent: rgb(var(--accent));
+  --color-accent-foreground: rgb(var(--accent-foreground));
+  --color-background: rgb(var(--background));
+  --color-foreground: rgb(var(--foreground));
+  --color-muted: rgb(var(--muted));
+  --color-muted-foreground: rgb(var(--muted-foreground));
+  --color-card: rgb(var(--card));
+  --color-card-foreground: rgb(var(--card-foreground));
+  --color-popover: rgb(var(--popover));
+  --color-popover-foreground: rgb(var(--popover-foreground));
+  --color-success: rgb(var(--success));
+  --color-warning: rgb(var(--warning));
+  --color-error: rgb(var(--error));
+  --color-info: rgb(var(--info));
+  --color-border: rgb(var(--border));
+  --color-input: rgb(var(--input));
+  --color-ring: rgb(var(--ring));
+
+  --font-sans: 'Inter', 'Noto Sans Devanagari', var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --font-heading: 'Poppins', 'Noto Sans Devanagari', system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), 'Courier New', monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: rgb(var(--border));
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: rgb(var(--background));
+  color: rgb(var(--foreground));
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Utility classes */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* Quill editor styles */
+.ql-container {
+  font-size: 1rem;
+  font-family: var(--font-sans);
+}
+
+.ql-editor {
+  min-height: 200px;
+}
+
+/* React Big Calendar styles */
+.rbc-calendar {
+  font-family: var(--font-sans);
+}
+
+.rbc-today {
+  background-color: rgba(var(--primary), 0.1);
+}
+
+.rbc-event {
+  background-color: rgb(var(--primary));
+  border-radius: 4px;
+}
+
+.rbc-event.rbc-selected {
+  background-color: rgb(var(--accent));
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--muted-foreground));
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--secondary));
 }
