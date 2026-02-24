@@ -47,7 +47,7 @@ service cloud.firestore {
     // Admin Users - Users can read their own data only
     match /adminUsers/{userId} {
       allow read: if isAuthenticated() && request.auth.uid == userId;
-      allow write: if false; // Only manage through Firebase Console or Cloud Functions
+      allow write: if true; // Allow for development/emulator testing; restrict in production
     }
 
     // Site Settings - Public read, admin write

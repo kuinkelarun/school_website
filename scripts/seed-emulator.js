@@ -10,7 +10,7 @@
 require('dotenv').config({ path: '.env.local' });
 
 const { initializeApp } = require('firebase/app');
-const { getAuth, createUserWithEmailAndPassword, connectAuthEmulator } = require('firebase/auth');
+const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, connectAuthEmulator } = require('firebase/auth');
 const { getFirestore, doc, setDoc, Timestamp, connectFirestoreEmulator } = require('firebase/firestore');
 
 // Admin credentials from .env.local (fallback to defaults)
@@ -34,15 +34,33 @@ async function seedData() {
   console.log('🌱 Starting to seed emulator data...\n');
 
   try {
-    // 1. Create admin user
-    console.log('1️⃣  Creating admin user...');
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      ADMIN_EMAIL,
-      ADMIN_PASSWORD
-    );
-    const uid = userCredential.user.uid;
-    console.log('   ✅ Admin user created with UID:', uid);
+    // 1. Create or get admin user
+    console.log('1️⃣  Setting up admin user...');
+    let uid;
+    
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        ADMIN_EMAIL,
+        ADMIN_PASSWORD
+      );
+      uid = userCredential.user.uid;
+      console.log('   ✅ Admin user created with UID:', uid);
+    } catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        // User already exists, sign in to get the UID
+        console.log('   ℹ️  Admin user already exists, retrieving...');
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          ADMIN_EMAIL,
+          ADMIN_PASSWORD
+        );
+        uid = userCredential.user.uid;
+        console.log('   ✅ Admin user found with UID:', uid);
+      } else {
+        throw error;
+      }
+    }
 
     // 2. Add admin user document
     console.log('\n2️⃣  Creating admin user document in Firestore...');
