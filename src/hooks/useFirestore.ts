@@ -35,6 +35,20 @@ interface UseMutationReturn<T> {
   success: boolean;
 }
 
+interface UseUpdateMutationReturn<T> {
+  mutate: (docId: string, data: Partial<T>) => Promise<void>;
+  loading: boolean;
+  error: string | null;
+  success: boolean;
+}
+
+interface UseDeleteMutationReturn {
+  mutate: (docId: string) => Promise<void>;
+  loading: boolean;
+  error: string | null;
+  success: boolean;
+}
+
 /**
  * Hook to fetch a single document
  */
@@ -107,7 +121,49 @@ export function useCollection<T>(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchDocuments = useCallback(async () => {
+  // Create a stable string representation of constraints to track changes
+  const constraintsStr = JSON.stringify(constraints);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchDocuments = async () => {
+      try {
+        if (!mounted) return;
+        setLoading(true);
+        setError(null);
+        const docs = await getDocuments<T>(collectionName, constraints);
+        if (mounted) setData(docs);
+      } catch (err: any) {
+        if (mounted) setError(err.message || 'Failed to fetch documents');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    if (realtime) {
+      // Subscribe to real-time updates
+      const unsubscribe = subscribeToCollection<T>(collectionName, constraints, (docs) => {
+        if (mounted) {
+          setData(docs);
+          setLoading(false);
+        }
+      });
+
+      return () => {
+        mounted = false;
+        unsubscribe();
+      };
+    } else {
+      // Fetch once
+      fetchDocuments();
+      return () => {
+        mounted = false;
+      };
+    }
+  }, [collectionName, constraintsStr, realtime, constraints]);
+
+  const refetch = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -120,26 +176,11 @@ export function useCollection<T>(
     }
   }, [collectionName, constraints]);
 
-  useEffect(() => {
-    if (realtime) {
-      // Subscribe to real-time updates
-      const unsubscribe = subscribeToCollection<T>(collectionName, constraints, (docs) => {
-        setData(docs);
-        setLoading(false);
-      });
-
-      return () => unsubscribe();
-    } else {
-      // Fetch once
-      fetchDocuments();
-    }
-  }, [collectionName, realtime, fetchDocuments]);
-
   return {
     data,
     loading,
     error,
-    refetch: fetchDocuments,
+    refetch,
   };
 }
 
@@ -157,7 +198,38 @@ export function useQueryDocuments<T>(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchDocuments = useCallback(async () => {
+  const filtersStr = JSON.stringify(filters);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchDocuments = async () => {
+      try {
+        if (!mounted) return;
+        setLoading(true);
+        setError(null);
+        const docs = await queryDocuments<T>(
+          collectionName,
+          filters,
+          orderByField,
+          orderDirection,
+          limitCount
+        );
+        if (mounted) setData(docs);
+      } catch (err: any) {
+        if (mounted) setError(err.message || 'Failed to query documents');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    fetchDocuments();
+    return () => {
+      mounted = false;
+    };
+  }, [collectionName, filtersStr, orderByField, orderDirection, limitCount, filters]);
+
+  const refetch = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -176,15 +248,11 @@ export function useQueryDocuments<T>(
     }
   }, [collectionName, filters, orderByField, orderDirection, limitCount]);
 
-  useEffect(() => {
-    fetchDocuments();
-  }, [fetchDocuments]);
-
   return {
     data,
     loading,
     error,
-    refetch: fetchDocuments,
+    refetch,
   };
 }
 
@@ -226,7 +294,7 @@ export function useAddDocument<T>(collectionName: string): UseMutationReturn<T> 
 /**
  * Hook to update a document
  */
-export function useUpdateDocument<T>(collectionName: string): UseMutationReturn<T> {
+export function useUpdateDocument<T>(collectionName: string): UseUpdateMutationReturn<T> {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -247,7 +315,7 @@ export function useUpdateDocument<T>(collectionName: string): UseMutationReturn<
       }
     },
     [collectionName]
-  ) as any;
+  );
 
   return {
     mutate,
@@ -260,7 +328,7 @@ export function useUpdateDocument<T>(collectionName: string): UseMutationReturn<
 /**
  * Hook to delete a document
  */
-export function useDeleteDocument(collectionName: string): UseMutationReturn<string> {
+export function useDeleteDocument(collectionName: string): UseDeleteMutationReturn {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -281,7 +349,7 @@ export function useDeleteDocument(collectionName: string): UseMutationReturn<str
       }
     },
     [collectionName]
-  ) as any;
+  );
 
   return {
     mutate,

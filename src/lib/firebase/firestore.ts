@@ -22,6 +22,8 @@ import {
 } from 'firebase/firestore';
 import { db } from './config';
 
+export type { QueryConstraint, WhereFilterOp };
+
 // ─── Bypass localStorage store (no Firebase needed) ──────────────────────────
 const BYPASS = process.env.NEXT_PUBLIC_BYPASS_AUTH === 'true';
 

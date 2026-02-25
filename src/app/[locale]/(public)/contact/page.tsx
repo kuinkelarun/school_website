@@ -41,9 +41,10 @@ export default function ContactPage() {
     setSubmitSuccess(false);
 
     try {
-      const contactData: ContactFormData = {
+      // Create contact message with status - cast to ContactMessage type
+      const contactData = {
         ...data,
-        status: 'unread',
+        status: 'unread' as const,
       };
 
       await addDocument('contactMessages', contactData);

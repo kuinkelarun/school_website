@@ -218,7 +218,7 @@ export default function EditEventPage() {
                 <input
                   {...register('endDate')}
                   type="datetime-local"
-                  min={watchStartDate}
+                  min={watchStartDate ? (typeof watchStartDate === 'string' ? watchStartDate : watchStartDate instanceof Date ? watchStartDate.toISOString().slice(0, 16) : (watchStartDate as any).toDate().toISOString().slice(0, 16)) : undefined}
                   className="w-full rounded-lg border bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>

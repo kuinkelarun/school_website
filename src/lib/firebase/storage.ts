@@ -137,7 +137,7 @@ export function generateUniqueFileName(originalName: string): string {
 /**
  * Validate file type
  */
-export function validateFileType(file: File, allowedTypes: string[]): boolean {
+export function validateFileType(file: File, allowedTypes: readonly string[]): boolean {
   return allowedTypes.some((type) => {
     if (type.includes('/*')) {
       // Handle wildcard types like 'image/*'

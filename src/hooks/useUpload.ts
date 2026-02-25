@@ -109,19 +109,20 @@ export function useUpload(): UseUploadReturn {
 
         // Upload all files
         const urls = await uploadMultipleFiles(files, path, (fileIndex, fileProgress) => {
-          setUploadProgress((prev) =>
-            prev.map((item, index) =>
+          setUploadProgress((prev) => {
+            const updated = prev.map((item, index) =>
               index === fileIndex ? { ...item, progress: fileProgress } : item
-            )
-          );
+            );
 
-          // Calculate overall progress
-          const totalProgress =
-            prev.reduce((sum, item, index) => {
-              return sum + (index === fileIndex ? fileProgress : item.progress);
-            }, 0) / files.length;
+            // Calculate overall progress
+            const totalProgress =
+              updated.reduce((sum, item, index) => {
+                return sum + (index === fileIndex ? fileProgress : item.progress);
+              }, 0) / files.length;
 
-          setProgress(totalProgress);
+            setProgress(totalProgress);
+            return updated;
+          });
         });
 
         // Update progress with URLs
