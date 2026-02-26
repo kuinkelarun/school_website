@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Calendar, MapPin } from 'lucide-react';
 import { useQueryDocuments } from '@/hooks/useFirestore';
@@ -12,16 +12,19 @@ export default function EventsPage() {
   const locale = useLocale();
   const [selectedCategory, setSelectedCategory] = useState<EventCategory | 'all'>('all');
 
+  // Stabilise the "now" value so it doesn't change on every render
+  const now = useMemo(() => new Date(), []);
+
   // Fetch upcoming events
   const filters = selectedCategory !== 'all'
     ? [
         { field: 'isPublished', operator: '==' as const, value: true },
         { field: 'category', operator: '==' as const, value: selectedCategory },
-        { field: 'startDate', operator: '>=' as const, value: new Date() },
+        { field: 'startDate', operator: '>=' as const, value: now },
       ]
     : [
         { field: 'isPublished', operator: '==' as const, value: true },
-        { field: 'startDate', operator: '>=' as const, value: new Date() },
+        { field: 'startDate', operator: '>=' as const, value: now },
       ];
 
   const { data: events, loading } = useQueryDocuments<Event>(

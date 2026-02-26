@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   getDocument,
   getDocuments,
@@ -121,6 +121,11 @@ export function useCollection<T>(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Keep a ref to constraints so the effect/refetch always read the latest value
+  // without needing the unstable array reference in dependency arrays.
+  const constraintsRef = useRef(constraints);
+  constraintsRef.current = constraints;
+
   // Create a stable string representation of constraints to track changes
   const constraintsStr = JSON.stringify(constraints);
 
@@ -132,7 +137,7 @@ export function useCollection<T>(
         if (!mounted) return;
         setLoading(true);
         setError(null);
-        const docs = await getDocuments<T>(collectionName, constraints);
+        const docs = await getDocuments<T>(collectionName, constraintsRef.current);
         if (mounted) setData(docs);
       } catch (err: any) {
         if (mounted) setError(err.message || 'Failed to fetch documents');
@@ -143,7 +148,7 @@ export function useCollection<T>(
 
     if (realtime) {
       // Subscribe to real-time updates
-      const unsubscribe = subscribeToCollection<T>(collectionName, constraints, (docs) => {
+      const unsubscribe = subscribeToCollection<T>(collectionName, constraintsRef.current, (docs) => {
         if (mounted) {
           setData(docs);
           setLoading(false);
@@ -161,20 +166,22 @@ export function useCollection<T>(
         mounted = false;
       };
     }
-  }, [collectionName, constraintsStr, realtime, constraints]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collectionName, constraintsStr, realtime]);
 
   const refetch = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const docs = await getDocuments<T>(collectionName, constraints);
+      const docs = await getDocuments<T>(collectionName, constraintsRef.current);
       setData(docs);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch documents');
     } finally {
       setLoading(false);
     }
-  }, [collectionName, constraints]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collectionName, constraintsStr]);
 
   return {
     data,
@@ -198,6 +205,10 @@ export function useQueryDocuments<T>(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Keep a ref to filters so the effect/refetch always read the latest value
+  const filtersRef = useRef(filters);
+  filtersRef.current = filters;
+
   const filtersStr = JSON.stringify(filters);
 
   useEffect(() => {
@@ -210,7 +221,7 @@ export function useQueryDocuments<T>(
         setError(null);
         const docs = await queryDocuments<T>(
           collectionName,
-          filters,
+          filtersRef.current,
           orderByField,
           orderDirection,
           limitCount
@@ -227,7 +238,8 @@ export function useQueryDocuments<T>(
     return () => {
       mounted = false;
     };
-  }, [collectionName, filtersStr, orderByField, orderDirection, limitCount, filters]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collectionName, filtersStr, orderByField, orderDirection, limitCount]);
 
   const refetch = useCallback(async () => {
     try {
@@ -235,7 +247,7 @@ export function useQueryDocuments<T>(
       setError(null);
       const docs = await queryDocuments<T>(
         collectionName,
-        filters,
+        filtersRef.current,
         orderByField,
         orderDirection,
         limitCount
@@ -246,7 +258,8 @@ export function useQueryDocuments<T>(
     } finally {
       setLoading(false);
     }
-  }, [collectionName, filters, orderByField, orderDirection, limitCount]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collectionName, filtersStr, orderByField, orderDirection, limitCount]);
 
   return {
     data,

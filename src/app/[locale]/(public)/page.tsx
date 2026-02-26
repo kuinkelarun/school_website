@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { ArrowRight, Calendar } from 'lucide-react';
@@ -16,6 +17,9 @@ export default function HomePage() {
   const tCommon = useTranslations('common');
   const locale = useLocale();
 
+  // Stabilise the "now" value so it doesn't change on every render
+  const now = useMemo(() => new Date(), []);
+
   // Fetch latest announcements
   const { data: announcements, loading: announcementsLoading } = useCollection<Announcement>(
     'announcements',
@@ -31,7 +35,7 @@ export default function HomePage() {
     'events',
     [
       where('isPublished', '==', true),
-      where('startDate', '>=', new Date()),
+      where('startDate', '>=', now),
       orderBy('startDate', 'asc'),
       limit(3),
     ]
