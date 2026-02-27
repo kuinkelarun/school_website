@@ -5,7 +5,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Calendar, MapPin } from 'lucide-react';
 import { useQueryDocuments } from '@/hooks/useFirestore';
 import type { Event, EventCategory } from '@/types';
-import { formatDate } from '@/lib/utils';
+import { formatDate, toDateSafe } from '@/lib/utils';
 
 export default function EventsPage() {
   const t = useTranslations('events');
@@ -85,12 +85,8 @@ export default function EventsPage() {
             {events.map((event) => {
               const title = locale === 'ne' && event.titleNe ? event.titleNe : event.title;
               const description = locale === 'ne' && event.descriptionNe ? event.descriptionNe : event.description;
-              const startDate = typeof event.startDate === 'object' && 'toDate' in event.startDate
-                ? event.startDate.toDate()
-                : event.startDate;
-              const endDate = typeof event.endDate === 'object' && 'toDate' in event.endDate
-                ? event.endDate.toDate()
-                : event.endDate;
+              const startDate = toDateSafe(event.startDate);
+              const endDate = toDateSafe(event.endDate);
 
               return (
                 <div

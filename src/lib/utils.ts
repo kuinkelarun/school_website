@@ -10,14 +10,28 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
+ * Safely convert any date-like value to a JS Date.
+ * Handles: real Firestore Timestamp (.toDate()), serialised Timestamp ({seconds, nanoseconds}),
+ * ISO strings, plain Date objects, and ms-since-epoch numbers.
+ */
+export function toDateSafe(value: any): Date {
+  if (!value) return new Date(NaN);
+  if (typeof value.toDate === 'function') return value.toDate();                // real Firestore Timestamp
+  if (typeof value === 'object' && 'seconds' in value)
+    return new Date(value.seconds * 1000 + (value.nanoseconds || 0) / 1e6);    // serialised Timestamp
+  if (value instanceof Date) return value;
+  return new Date(value);                                                        // string or number
+}
+
+/**
  * Format date to locale string
  */
 export function formatDate(
-  date: Date | string | number,
+  date: any,
   locale: string = 'en',
   options?: Intl.DateTimeFormatOptions
 ): string {
-  const dateObj = typeof date === 'string' || typeof date === 'number' ? new Date(date) : date;
+  const dateObj = toDateSafe(date);
 
   const defaultOptions: Intl.DateTimeFormatOptions = {
     year: 'numeric',
@@ -32,8 +46,8 @@ export function formatDate(
 /**
  * Format relative time (e.g., "2 days ago")
  */
-export function formatRelativeTime(date: Date | string | number, locale: string = 'en'): string {
-  const dateObj = typeof date === 'string' || typeof date === 'number' ? new Date(date) : date;
+export function formatRelativeTime(date: any, locale: string = 'en'): string {
+  const dateObj = toDateSafe(date);
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
 

@@ -7,10 +7,9 @@ import { ArrowRight, Calendar } from 'lucide-react';
 import { HeroCarousel } from '@/components/public/HeroCarousel';
 import { AnnouncementCard } from '@/components/public/AnnouncementCard';
 import { QuickLinks } from '@/components/public/QuickLinks';
-import { useCollection } from '@/hooks/useFirestore';
-import { where, orderBy, limit } from 'firebase/firestore';
+import { useQueryDocuments } from '@/hooks/useFirestore';
 import type { Announcement, Event } from '@/types';
-import { formatDate } from '@/lib/utils';
+import { formatDate, toDateSafe } from '@/lib/utils';
 
 export default function HomePage() {
   const t = useTranslations('home');
@@ -21,24 +20,26 @@ export default function HomePage() {
   const now = useMemo(() => new Date(), []);
 
   // Fetch latest announcements
-  const { data: announcements, loading: announcementsLoading } = useCollection<Announcement>(
+  const { data: announcements, loading: announcementsLoading } = useQueryDocuments<Announcement>(
     'announcements',
     [
-      where('isPublished', '==', true),
-      orderBy('publishedDate', 'desc'),
-      limit(6),
-    ]
+      { field: 'isPublished', operator: '==', value: true },
+    ],
+    'publishedDate',
+    'desc',
+    6
   );
 
   // Fetch upcoming events
-  const { data: events, loading: eventsLoading } = useCollection<Event>(
+  const { data: events, loading: eventsLoading } = useQueryDocuments<Event>(
     'events',
     [
-      where('isPublished', '==', true),
-      where('startDate', '>=', now),
-      orderBy('startDate', 'asc'),
-      limit(3),
-    ]
+      { field: 'isPublished', operator: '==', value: true },
+      { field: 'startDate', operator: '>=', value: now },
+    ],
+    'startDate',
+    'asc',
+    3
   );
 
   return (
@@ -114,9 +115,7 @@ export default function HomePage() {
             <div className="grid gap-6 md:grid-cols-3">
               {events.map((event) => {
                 const title = locale === 'ne' && event.titleNe ? event.titleNe : event.title;
-                const eventDate = typeof event.startDate === 'object' && 'toDate' in event.startDate
-                  ? event.startDate.toDate()
-                  : event.startDate;
+                const eventDate = toDateSafe(event.startDate);
 
                 return (
                   <Link

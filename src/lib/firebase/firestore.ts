@@ -207,6 +207,61 @@ export async function queryDocuments<T = DocumentData>(
   orderDirection: 'asc' | 'desc' = 'desc',
   limitCount?: number
 ): Promise<T[]> {
+  if (BYPASS) {
+    let docs = bpGetAll(collectionName);
+
+    // Coerce a stored value or filter value to a comparable primitive.
+    // Handles: Date objects, ISO strings, Firestore-style {seconds, nanoseconds} objects, and plain numbers.
+    const coerce = (v: any): any => {
+      if (v == null) return v;
+      if (v instanceof Date) return v.getTime();
+      if (typeof v === 'object' && 'seconds' in v)
+        return v.seconds * 1000 + (v.nanoseconds || 0) / 1e6;
+      if (typeof v === 'string') {
+        const d = new Date(v);
+        if (!isNaN(d.getTime())) return d.getTime();
+      }
+      return v;
+    };
+
+    // Apply each filter in-memory
+    for (const f of filters) {
+      docs = docs.filter((doc) => {
+        const val = doc[f.field];
+        switch (f.operator) {
+          case '==': return val === f.value;
+          case '!=': return val !== f.value;
+          case '>':  return coerce(val) > coerce(f.value);
+          case '>=': return coerce(val) >= coerce(f.value);
+          case '<':  return coerce(val) < coerce(f.value);
+          case '<=': return coerce(val) <= coerce(f.value);
+          case 'in': return Array.isArray(f.value) && f.value.includes(val);
+          case 'not-in': return Array.isArray(f.value) && !f.value.includes(val);
+          case 'array-contains': return Array.isArray(val) && val.includes(f.value);
+          default: return true;
+        }
+      });
+    }
+
+    // Sort by orderByField
+    if (orderByField) {
+      // Helper: coerce stored values (ISO strings, Firestore Timestamp objects, numbers) to ms
+      const toMs = (v: any): number => {
+        if (v == null) return 0;
+        if (typeof v === 'object' && 'seconds' in v) return v.seconds * 1000 + (v.nanoseconds || 0) / 1e6;
+        if (typeof v === 'string') return new Date(v).getTime();
+        return Number(v);
+      };
+      docs.sort((a, b) => {
+        const diff = toMs(a[orderByField]) - toMs(b[orderByField]);
+        return orderDirection === 'asc' ? diff : -diff;
+      });
+    }
+
+    if (limitCount) docs = docs.slice(0, limitCount);
+    return docs as T[];
+  }
+
   try {
     const collectionRef = collection(db, collectionName);
     const constraints: QueryConstraint[] = [];

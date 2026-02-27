@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { Calendar, User, ArrowRight } from 'lucide-react';
 import type { Announcement } from '@/types';
-import { formatDate, truncate, stripHtml } from '@/lib/utils';
+import { formatDate, truncate, stripHtml, toDateSafe } from '@/lib/utils';
 import { cn } from '@/lib/utils';
 
 interface AnnouncementCardProps {
@@ -81,12 +81,7 @@ export function AnnouncementCard({ announcement }: AnnouncementCardProps) {
           <div className="flex items-center space-x-1">
             <Calendar className="h-4 w-4" />
             <span>
-              {announcement.publishedDate && formatDate(
-                typeof announcement.publishedDate === 'object' && 'toDate' in announcement.publishedDate
-                  ? announcement.publishedDate.toDate()
-                  : announcement.publishedDate,
-                locale
-              )}
+              {announcement.publishedDate && formatDate(toDateSafe(announcement.publishedDate), locale)}
             </span>
           </div>
           <div className="flex items-center space-x-1">
