@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import { Menu, X } from 'lucide-react';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { useDocument } from '@/hooks/useFirestore';
+import type { SiteSettings } from '@/types';
 import { cn } from '@/lib/utils';
 
 export function Header() {
@@ -12,12 +14,22 @@ export function Header() {
   const locale = useLocale();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Fetch site settings for school name & logo
+  const { data: settings } = useDocument<SiteSettings>('siteSettings', 'main');
+  const schoolName = settings
+    ? locale === 'ne' && settings.schoolNameNe
+      ? settings.schoolNameNe
+      : settings.schoolName
+    : '';
+  const logoUrl = settings?.logoUrl || '';
+
   const navLinks = [
     { href: `/${locale}`, label: t('home') },
     { href: `/${locale}/about`, label: t('about') },
     { href: `/${locale}/announcements`, label: t('announcements') },
     { href: `/${locale}/programs`, label: t('programs') },
     { href: `/${locale}/events`, label: t('events') },
+    { href: `/${locale}/gallery`, label: t('gallery') },
     { href: `/${locale}/contact`, label: t('contact') },
   ];
 
@@ -27,11 +39,22 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href={`/${locale}`} className="flex items-center space-x-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <span className="text-xl font-bold">S</span>
-            </div>
+            {logoUrl ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={logoUrl}
+                alt={schoolName || 'School Logo'}
+                width={40}
+                height={40}
+                className="h-10 w-10 rounded-full object-cover"
+              />
+            ) : (
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                <span className="text-xl font-bold">{(schoolName || 'S')[0]}</span>
+              </div>
+            )}
             <span className="hidden font-heading text-xl font-bold sm:inline-block">
-              School Name
+              {schoolName || 'School Name'}
             </span>
           </Link>
 

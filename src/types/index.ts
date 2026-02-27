@@ -151,6 +151,7 @@ export interface SiteSettings {
   id: string;
   schoolName: string;
   schoolNameNe: string;
+  logoUrl: string;
   tagline: string;
   taglineNe: string;
   address: string;
@@ -158,6 +159,7 @@ export interface SiteSettings {
   phone: string;
   email: string;
   socialMedia: SocialMedia;
+  mapEmbedUrl?: string;
   aboutContent: string;
   aboutContentNe: string;
   missionVision: string;
@@ -170,6 +172,30 @@ export interface SocialMedia {
   instagram?: string;
   youtube?: string;
 }
+
+// ============================================================================
+// Gallery
+// ============================================================================
+
+export type GalleryItemType = 'image' | 'video' | 'document';
+
+export interface GalleryItem extends BaseDocument {
+  type: GalleryItemType;
+  url: string;
+  thumbnailUrl?: string;
+  title: string;
+  titleNe?: string;
+  description?: string;
+  descriptionNe?: string;
+  mimeType: string;
+  fileSize: number;
+  fileName: string;
+  isPublished: boolean;
+  displayOrder: number;
+  uploadedBy: string;
+}
+
+export type GalleryItemFormData = Omit<GalleryItem, 'id' | 'createdAt' | 'updatedAt'>;
 
 // ============================================================================
 // Media File

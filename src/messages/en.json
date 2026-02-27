@@ -22,6 +22,7 @@
     "announcements": "Announcements",
     "programs": "Programs",
     "events": "Events",
+    "gallery": "Gallery",
     "contact": "Contact",
     "admissions": "Admissions",
     "admin": "Admin"
@@ -88,6 +89,17 @@
     },
     "exportCalendar": "Export to Calendar"
   },
+  "gallery": {
+    "title": "Gallery",
+    "subtitle": "Browse our collection of photos, videos and documents.",
+    "empty": "No gallery items available.",
+    "filter": {
+      "all": "All",
+      "image": "Photos",
+      "video": "Videos",
+      "document": "Documents"
+    }
+  },
   "contact": {
     "title": "Contact Us",
     "getInTouch": "Get in Touch",
@@ -139,6 +151,9 @@
       "events": "Events",
       "programs": "Programs",
       "media": "Media Library",
+      "gallery": "Gallery",
+      "about": "About Page",
+      "siteSettings": "Site Settings",
       "settings": "Settings",
       "logout": "Logout"
     },
@@ -228,6 +243,49 @@
       "deleteSuccess": "File deleted successfully",
       "confirmDelete": "Are you sure you want to delete this file?"
     },
+    "gallery": {
+      "title": "Gallery Management",
+      "items": "items",
+      "uploadNew": "Upload Files",
+      "deleteSelected": "Delete Selected",
+      "selectAll": "Select All",
+      "deselectAll": "Deselect All",
+      "selected": "selected",
+      "empty": "No gallery items yet. Upload your first file!",
+      "published": "Published",
+      "draft": "Draft",
+      "hide": "Hide",
+      "show": "Show",
+      "confirmDelete": "Are you sure you want to delete this item?",
+      "filter": {
+        "all": "All",
+        "image": "Photos",
+        "video": "Videos",
+        "document": "Documents"
+      },
+      "uploadModal": {
+        "title": "Upload Gallery Files",
+        "dropzone": "Click to select files or drag and drop",
+        "supportedFormats": "Images (JPG, PNG, WebP, GIF), Videos (MP4, MOV, WebM), Documents (PDF, DOC, XLSX…)",
+        "titlePlaceholder": "Title (optional, defaults to filename)",
+        "descriptionPlaceholder": "Description (optional)",
+        "done": "Uploaded",
+        "addMore": "Add more files",
+        "filesReady": "uploaded",
+        "cancel": "Cancel",
+        "uploadAll": "Upload All",
+        "uploading": "Uploading…"
+      },
+      "editModal": {
+        "title": "Edit Gallery Item",
+        "titleEn": "Title (English)",
+        "titleNe": "Title (Nepali)",
+        "descriptionEn": "Description (English)",
+        "descriptionNe": "Description (Nepali)",
+        "cancel": "Cancel",
+        "save": "Save Changes"
+      }
+    },
     "validation": {
       "required": "This field is required",
       "invalidEmail": "Invalid email address",
@@ -236,6 +294,48 @@
       "invalidUrl": "Invalid URL",
       "invalidFileType": "Invalid file type",
       "fileTooLarge": "File size exceeds maximum limit"
+    },
+    "about": {
+      "title": "About Page Management",
+      "aboutContentEn": "About Content (English)",
+      "aboutContentNe": "About Content (Nepali)",
+      "aboutContentHint": "HTML is supported. This content appears on the public About page.",
+      "missionVisionEn": "Mission & Vision (English)",
+      "missionVisionNe": "Mission & Vision (Nepali)",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "saveSuccess": "About content saved successfully.",
+      "saveError": "Failed to save about content. Please try again."
+    },
+    "siteSettings": {
+      "title": "Site Settings",
+      "schoolLogo": "School Logo",
+      "logoHint": "Upload a round logo that will appear in the site header. Recommended size: 200×200px.",
+      "uploadLogo": "Upload Logo",
+      "logoRequirements": "PNG or JPEG, max 2 MB, square recommended.",
+      "schoolNameSection": "School Name",
+      "schoolNameEn": "School Name (English)",
+      "schoolNameNe": "School Name (Nepali)",
+      "taglineSection": "Tagline",
+      "taglineEn": "Tagline (English)",
+      "taglineNe": "Tagline (Nepali)",
+      "contactInfo": "Contact Information",
+      "phone": "Phone",
+      "email": "Email",
+      "addressEn": "Address (English)",
+      "addressNe": "Address (Nepali)",
+      "socialSection": "Social Media",
+      "socialFacebook": "Facebook URL",
+      "socialTwitter": "Twitter / X URL",
+      "socialInstagram": "Instagram URL",
+      "socialYoutube": "YouTube URL",
+      "mapSection": "Map Location",
+      "mapEmbedUrl": "Google Maps Embed URL",
+      "mapEmbedHint": "Go to Google Maps → Share → Embed a map → copy the src URL from the iframe code.",
+      "save": "Save Settings",
+      "saving": "Saving...",
+      "saveSuccess": "Site settings saved successfully.",
+      "saveError": "Failed to save settings. Please try again."
     }
   }
 }

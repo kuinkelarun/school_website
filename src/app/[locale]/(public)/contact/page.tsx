@@ -1,13 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import React from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { MapPin, Phone, Mail, Clock, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
 import { addDocument } from '@/lib/firebase/firestore';
-import type { ContactFormData } from '@/types';
+import { useDocument } from '@/hooks/useFirestore';
+import type { ContactFormData, SiteSettings } from '@/types';
 
 const contactFormSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -25,6 +27,22 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const { data: settings } = useDocument<SiteSettings>('siteSettings', 'main');
+
+  const address = settings
+    ? locale === 'ne' && settings.addressNe ? settings.addressNe : settings.address
+    : '123 School Street, City, Nepal';
+  const phone = settings?.phone || '+977-1-1234567';
+  const email = settings?.email || 'info@schoolname.edu.np';
+  const mapUrl = settings?.mapEmbedUrl || '';
+
+  const socialLinks = [
+    settings?.socialMedia?.facebook && { icon: Facebook, href: settings.socialMedia.facebook, label: 'Facebook' },
+    settings?.socialMedia?.twitter && { icon: Twitter, href: settings.socialMedia.twitter, label: 'Twitter (X)' },
+    settings?.socialMedia?.instagram && { icon: Instagram, href: settings.socialMedia.instagram, label: 'Instagram' },
+    settings?.socialMedia?.youtube && { icon: Youtube, href: settings.socialMedia.youtube, label: 'YouTube' },
+  ].filter(Boolean) as { icon: React.ElementType; href: string; label: string }[];
 
   const {
     register,
@@ -172,33 +190,37 @@ export default function ContactPage() {
 
               <div className="space-y-4">
                 {/* Address */}
-                <div className="flex items-start space-x-3">
-                  <MapPin className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
-                  <div>
-                    <p className="font-medium">{t('address')}</p>
-                    <p className="text-sm text-muted-foreground">
-                      123 School Street, City, Nepal
-                    </p>
+                {address && (
+                  <div className="flex items-start space-x-3">
+                    <MapPin className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
+                    <div>
+                      <p className="font-medium">{t('address')}</p>
+                      <p className="text-sm text-muted-foreground">{address}</p>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Phone */}
-                <div className="flex items-start space-x-3">
-                  <Phone className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
-                  <div>
-                    <p className="font-medium">{t('phone')}</p>
-                    <p className="text-sm text-muted-foreground">+977-1-1234567</p>
+                {phone && (
+                  <div className="flex items-start space-x-3">
+                    <Phone className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
+                    <div>
+                      <p className="font-medium">{t('phone')}</p>
+                      <a href={`tel:${phone}`} className="text-sm text-muted-foreground hover:text-primary">{phone}</a>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Email */}
-                <div className="flex items-start space-x-3">
-                  <Mail className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
-                  <div>
-                    <p className="font-medium">{t('email')}</p>
-                    <p className="text-sm text-muted-foreground">info@schoolname.edu.np</p>
+                {email && (
+                  <div className="flex items-start space-x-3">
+                    <Mail className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
+                    <div>
+                      <p className="font-medium">{t('email')}</p>
+                      <a href={`mailto:${email}`} className="text-sm text-muted-foreground hover:text-primary">{email}</a>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Office Hours */}
                 <div className="flex items-start space-x-3">
@@ -214,43 +236,42 @@ export default function ContactPage() {
             </div>
 
             {/* Social Media */}
-            <div>
-              <h3 className="mb-4 text-lg font-semibold">{t('socialMedia')}</h3>
-              <div className="flex space-x-3">
-                {[
-                  { icon: Facebook, href: '#' },
-                  { icon: Twitter, href: '#' },
-                  { icon: Instagram, href: '#' },
-                  { icon: Youtube, href: '#' },
-                ].map((social, index) => (
-                  <a
-                    key={index}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
-                  >
-                    <social.icon className="h-5 w-5" />
-                  </a>
-                ))}
+            {socialLinks.length > 0 && (
+              <div>
+                <h3 className="mb-4 text-lg font-semibold">{t('socialMedia')}</h3>
+                <div className="flex space-x-3">
+                  {socialLinks.map((social) => (
+                    <a
+                      key={social.label}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={social.label}
+                      className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                    >
+                      <social.icon className="h-5 w-5" />
+                    </a>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Map */}
-            <div>
-              <h3 className="mb-4 text-lg font-semibold">Location</h3>
-              <div className="h-64 overflow-hidden rounded-lg border">
-                {/* Google Maps Embed - Replace with actual coordinates */}
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.699018857!2d85.3239605!3d27.7089484!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjfCsDQyJzMyLjIiTiA4NcKwMTknMjYuMyJF!5e0!3m2!1sen!2snp!4v1234567890"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                />
+            {mapUrl && (
+              <div>
+                <h3 className="mb-4 text-lg font-semibold">Location</h3>
+                <div className="h-64 overflow-hidden rounded-lg border">
+                  <iframe
+                    src={mapUrl}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                  />
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

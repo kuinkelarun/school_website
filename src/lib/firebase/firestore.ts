@@ -4,6 +4,7 @@ import {
   getDoc,
   getDocs,
   addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   query,
@@ -149,6 +150,35 @@ export async function updateDocument<T = Partial<DocumentData>>(
     });
   } catch (error) {
     console.error(`Error updating document in ${collectionName}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Set (create or overwrite) a document with a specific ID
+ */
+export async function setDocument<T = DocumentData>(
+  collectionName: string,
+  docId: string,
+  data: T
+): Promise<void> {
+  if (BYPASS) {
+    // Upsert: remove existing then prepend
+    const docs = bpGetAll(collectionName).filter((d) => d.id !== docId);
+    const now = new Date().toISOString();
+    const clean = JSON.parse(JSON.stringify({ ...data, id: docId, createdAt: now, updatedAt: now }));
+    docs.unshift(clean);
+    bpSave(collectionName, docs);
+    return;
+  }
+  try {
+    const docRef = doc(db, collectionName, docId);
+    await setDoc(docRef, {
+      ...data,
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
+  } catch (error) {
+    console.error(`Error setting document in ${collectionName}:`, error);
     throw error;
   }
 }

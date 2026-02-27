@@ -15,6 +15,8 @@ import {
   LogOut,
   Menu,
   X,
+  Info,
+  Images,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
@@ -32,6 +34,9 @@ export function AdminSidebar() {
     { href: '/en/admin/events', icon: Calendar, label: t('events') },
     { href: '/en/admin/programs', icon: GraduationCap, label: t('programs') },
     { href: '/en/admin/media', icon: FolderOpen, label: t('media') },
+    { href: '/en/admin/gallery', icon: Images, label: t('gallery') },
+    { href: '/en/admin/about', icon: Info, label: t('about') },
+    { href: '/en/admin/site-settings', icon: Settings, label: t('siteSettings') },
   ];
 
   const handleSignOut = async () => {
