@@ -7,7 +7,6 @@ import { useForm } from 'react-hook-form';
 import { ArrowLeft, Save } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { addDocument } from '@/lib/firebase/firestore';
-import { Timestamp } from 'firebase/firestore';
 import slugify from 'slugify';
 import type { AnnouncementFormData } from '@/types';
 
@@ -21,7 +20,7 @@ export default function NewAnnouncementPage() {
     defaultValues: {
       category: 'general',
       isFeatured: false,
-      isPublished: false,
+      isPublished: true,
     },
   });
 
@@ -40,7 +39,7 @@ export default function NewAnnouncementPage() {
         authorName: adminUser?.fullName || 'Admin',
         viewCount: 0,
         attachments: [],
-        publishedDate: data.isPublished ? Timestamp.now() : null,
+        publishedDate: data.isPublished ? new Date().toISOString() : null,
       };
 
       await addDocument('announcements', announcementData);

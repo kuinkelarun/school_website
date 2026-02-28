@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
-import { useCollection } from '@/hooks/useFirestore';
+import { useCollection, useDocument } from '@/hooks/useFirestore';
 import { where } from 'firebase/firestore';
 import {
   Megaphone,
@@ -11,9 +11,23 @@ import {
   Mail,
   TrendingUp,
   Plus,
+  HardDrive,
+  AlertTriangle,
 } from 'lucide-react';
 import Link from 'next/link';
-import type { Announcement, Event, Program, ContactMessage } from '@/types';
+import type { Announcement, Event, Program, ContactMessage, GalleryItem } from '@/types';
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+const BYPASS = process.env.NEXT_PUBLIC_BYPASS_AUTH === 'true';
+const DEFAULT_LIMIT = 4.5 * 1024 * 1024 * 1024; // 4.5 GB
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function AdminDashboard() {
   const t = useTranslations('admin.dashboard');
@@ -26,6 +40,24 @@ export default function AdminDashboard() {
   const { data: messages } = useCollection<ContactMessage>('contactMessages', [
     where('status', '==', 'unread'),
   ]);
+
+  // Storage usage – Cloud Function writes to siteSettings/storageUsage.
+  // In bypass mode or before any upload has been tracked, we fall back to
+  // calculating from client-side gallery data.
+  const { data: storageUsageDoc } = useDocument<{
+    id: string;
+    totalBytes: number;
+    limitBytes: number;
+  }>('siteSettings', 'storageUsage');
+
+  const { data: galleryItems } = useCollection<GalleryItem>('gallery', []);
+
+  // Calculate storage: prefer the Cloud Function document; fall back to
+  // summing gallery items' fileSize on the client (bypass / first deploy).
+  const clientBytes = galleryItems.reduce((sum, g) => sum + (g.fileSize || 0), 0);
+  const totalBytes = storageUsageDoc?.totalBytes ?? clientBytes;
+  const limitBytes = storageUsageDoc?.limitBytes ?? DEFAULT_LIMIT;
+  const pct = limitBytes > 0 ? totalBytes / limitBytes : 0;
 
   const stats = [
     {
@@ -118,6 +150,56 @@ export default function AdminDashboard() {
             </div>
           </Link>
         ))}
+      </div>
+
+      {/* Storage Usage Meter */}
+      <div className="rounded-lg border bg-card p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <HardDrive className="h-5 w-5 text-muted-foreground" />
+            <h2 className="text-lg font-semibold">{t('storageUsage')}</h2>
+          </div>
+          <span className="text-sm text-muted-foreground">
+            {formatBytes(totalBytes)} / {formatBytes(limitBytes)}
+          </span>
+        </div>
+
+        {/* Progress bar */}
+        <div className="h-4 w-full overflow-hidden rounded-full bg-muted">
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${
+              pct >= 0.9
+                ? 'bg-destructive'
+                : pct >= 0.7
+                  ? 'bg-yellow-500'
+                  : 'bg-primary'
+            }`}
+            style={{ width: `${Math.min(pct * 100, 100)}%` }}
+          />
+        </div>
+
+        <div className="mt-3 flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">
+            {t('storageUsed')}: {formatBytes(totalBytes)}
+          </span>
+          <span className="text-muted-foreground">
+            {t('storageFree')}: {formatBytes(Math.max(limitBytes - totalBytes, 0))}
+          </span>
+        </div>
+
+        {/* Warning banners */}
+        {pct >= 0.9 && (
+          <div className="mt-3 flex items-center gap-2 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+            <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+            {t('storageDanger')}
+          </div>
+        )}
+        {pct >= 0.7 && pct < 0.9 && (
+          <div className="mt-3 flex items-center gap-2 rounded-lg bg-yellow-500/10 p-3 text-sm text-yellow-700 dark:text-yellow-400">
+            <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+            {t('storageWarning')}
+          </div>
+        )}
       </div>
 
       {/* Quick Actions */}

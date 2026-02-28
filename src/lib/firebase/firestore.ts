@@ -229,8 +229,19 @@ export async function queryDocuments<T = DocumentData>(
       docs = docs.filter((doc) => {
         const val = doc[f.field];
         switch (f.operator) {
-          case '==': return val === f.value;
-          case '!=': return val !== f.value;
+          case '==': {
+            // Strict match first, then handle boolean/string coercion
+            if (val === f.value) return true;
+            if (typeof f.value === 'boolean') return val === String(f.value) || (f.value === true && val === 1) || (f.value === false && val === 0);
+            return false;
+          }
+          case '!=': {
+            if (val !== f.value) {
+              if (typeof f.value === 'boolean') return val !== String(f.value);
+              return true;
+            }
+            return false;
+          }
           case '>':  return coerce(val) > coerce(f.value);
           case '>=': return coerce(val) >= coerce(f.value);
           case '<':  return coerce(val) < coerce(f.value);

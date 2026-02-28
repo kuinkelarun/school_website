@@ -20,7 +20,7 @@ export default function HomePage() {
   const now = useMemo(() => new Date(), []);
 
   // Fetch latest announcements
-  const { data: announcements, loading: announcementsLoading } = useQueryDocuments<Announcement>(
+  const { data: announcements, loading: announcementsLoading, error: announcementsError } = useQueryDocuments<Announcement>(
     'announcements',
     [
       { field: 'isPublished', operator: '==', value: true },
@@ -31,7 +31,7 @@ export default function HomePage() {
   );
 
   // Fetch upcoming events
-  const { data: events, loading: eventsLoading } = useQueryDocuments<Event>(
+  const { data: events, loading: eventsLoading, error: eventsError } = useQueryDocuments<Event>(
     'events',
     [
       { field: 'isPublished', operator: '==', value: true },
@@ -77,6 +77,10 @@ export default function HomePage() {
                 <div key={i} className="h-96 animate-pulse rounded-lg bg-muted" />
               ))}
             </div>
+          ) : announcementsError ? (
+            <div className="rounded-lg border border-error/50 bg-error/5 p-6 text-center">
+              <p className="text-error">Failed to load announcements: {announcementsError}</p>
+            </div>
           ) : announcements.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {announcements.map((announcement) => (
@@ -110,6 +114,10 @@ export default function HomePage() {
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="h-64 animate-pulse rounded-lg bg-muted" />
               ))}
+            </div>
+          ) : eventsError ? (
+            <div className="rounded-lg border border-error/50 bg-error/5 p-6 text-center">
+              <p className="text-error">Failed to load events: {eventsError}</p>
             </div>
           ) : events.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-3">

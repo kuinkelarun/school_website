@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Plus, Pencil, Trash2, Eye, Star } from 'lucide-react';
+import { Plus, Pencil, Trash2, Eye, Star, ToggleLeft, ToggleRight } from 'lucide-react';
 import { useCollection, useDeleteDocument } from '@/hooks/useFirestore';
+import { updateDocument } from '@/lib/firebase/firestore';
 import { orderBy } from 'firebase/firestore';
 import type { Announcement } from '@/types';
 import { formatDate } from '@/lib/utils';
@@ -41,6 +42,22 @@ export default function AnnouncementsAdminPage() {
     } catch (error) {
       console.error('Error deleting announcement:', error);
       alert('Failed to delete announcement');
+    }
+  };
+
+  const handleTogglePublish = async (announcement: Announcement) => {
+    try {
+      const newPublished = !announcement.isPublished;
+      await updateDocument('announcements', announcement.id, {
+        isPublished: newPublished,
+        ...(newPublished && !announcement.publishedDate
+          ? { publishedDate: new Date().toISOString() }
+          : {}),
+      });
+      refetch();
+    } catch (error) {
+      console.error('Error toggling publish status:', error);
+      alert('Failed to update announcement');
     }
   };
 
@@ -175,6 +192,21 @@ export default function AnnouncementsAdminPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end space-x-2">
+                        <button
+                          onClick={() => handleTogglePublish(announcement)}
+                          className={`rounded-lg p-2 transition-colors ${
+                            announcement.isPublished
+                              ? 'bg-success/10 text-success hover:bg-success/20'
+                              : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                          }`}
+                          title={announcement.isPublished ? 'Unpublish' : 'Publish'}
+                        >
+                          {announcement.isPublished ? (
+                            <ToggleRight className="h-4 w-4" />
+                          ) : (
+                            <ToggleLeft className="h-4 w-4" />
+                          )}
+                        </button>
                         <button
                           onClick={() => window.open(`/en/announcements/${announcement.slug}`, '_blank')}
                           className="rounded-lg bg-muted p-2 transition-colors hover:bg-muted/80"

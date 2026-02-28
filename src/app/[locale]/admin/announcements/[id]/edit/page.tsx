@@ -7,7 +7,6 @@ import { useForm } from 'react-hook-form';
 import { ArrowLeft, Save } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { getDocument, updateDocument } from '@/lib/firebase/firestore';
-import { Timestamp } from 'firebase/firestore';
 import slugify from 'slugify';
 import type { Announcement, AnnouncementFormData } from '@/types';
 
@@ -64,12 +63,11 @@ export default function EditAnnouncementPage() {
       const updateData: Partial<Announcement> = {
         ...data,
         slug,
-        updatedAt: Timestamp.now(),
       };
 
       // Update publishedDate if changing from draft to published
       if (data.isPublished && !announcement?.isPublished) {
-        updateData.publishedDate = Timestamp.now();
+        updateData.publishedDate = new Date().toISOString() as any;
       }
 
       await updateDocument('announcements', id, updateData);

@@ -134,17 +134,28 @@ export default function AdminGalleryPage() {
     if (queue.length === 0) return;
     setUploading(true);
 
-    // Use a local accumulator so each loop iteration sees all previously added items
+    // Use a local accumulator so each loop iteration sees previously added items
     let currentBypassItems = [...bypassItems];
+    // Track locally so the close logic doesn't depend on stale React state
+    let successCount = 0;
+    let errorCount = 0;
+    const pending = queue.filter((q) => !q.done);
 
     for (let i = 0; i < queue.length; i++) {
       const q = queue[i];
-      if (q.done) continue;
+      if (q.done) { successCount++; continue; }
 
       try {
         let url = '';
         if (BYPASS) {
-          url = await fileToBase64(q.file);
+          // Use base64 only for small files (≤ 2 MB) to stay within localStorage quota.
+          // For larger files use an object URL (session-only — survives until page reload).
+          const MAX_B64 = 2 * 1024 * 1024;
+          if (q.file.size <= MAX_B64) {
+            url = await fileToBase64(q.file);
+          } else {
+            url = URL.createObjectURL(q.file);
+          }
         } else {
           url = await uploadFile(
             q.file,
@@ -174,8 +185,14 @@ export default function AdminGalleryPage() {
 
         if (BYPASS) {
           const id = `bp_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-          currentBypassItems = [{ ...newItem, id }, ...currentBypassItems];
-          bpSave(currentBypassItems);
+          const newEntry = { ...newItem, id };
+          currentBypassItems = [newEntry, ...currentBypassItems];
+          try {
+            bpSave(currentBypassItems);
+          } catch (quotaErr: any) {
+            // localStorage quota exceeded — keep item in memory only (session-only)
+            console.warn('localStorage quota exceeded, item stored in session only:', q.file.name);
+          }
           setBypassItems(currentBypassItems);
         } else {
           await addItem(newItem);
@@ -184,25 +201,25 @@ export default function AdminGalleryPage() {
         setQueue((prev) =>
           prev.map((item, idx) => (idx === i ? { ...item, done: true, progress: 100 } : item))
         );
+        successCount++;
       } catch (err: any) {
+        const msg = err?.name === 'QuotaExceededError'
+          ? 'File too large for local storage. Try a smaller file or use real Firebase.'
+          : (err.message || 'Upload failed');
         setQueue((prev) =>
-          prev.map((item, idx) =>
-            idx === i ? { ...item, error: err.message || 'Upload failed' } : item
-          )
+          prev.map((item, idx) => (idx === i ? { ...item, error: msg } : item))
         );
+        errorCount++;
       }
     }
 
     if (!BYPASS) refetch();
     setUploading(false);
 
-    // Close after a short delay if all succeeded
-    const allDone = queue.every((q) => q.done);
-    if (allDone) {
-      setTimeout(() => {
-        setShowUploadModal(false);
-        setQueue([]);
-      }, 800);
+    // Close immediately if every pending file succeeded; leave open on any error
+    if (errorCount === 0 && successCount >= pending.length) {
+      setShowUploadModal(false);
+      setQueue([]);
     }
   };
 
@@ -526,6 +543,11 @@ export default function AdminGalleryPage() {
                       </p>
                     </div>
                   </button>
+                  {BYPASS && (
+                    <p className="rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-2 text-center text-xs text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300">
+                      ⚠ Local testing mode: images under 2 MB are saved persistently. Larger files (videos, docs) are session-only and will disappear after a page reload.
+                    </p>
+                  )}
                 </>
               ) : (
                 <>

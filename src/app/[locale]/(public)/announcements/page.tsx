@@ -21,7 +21,7 @@ export default function AnnouncementsPage() {
       ]
     : [{ field: 'isPublished', operator: '==' as const, value: true }];
 
-  const { data: announcements, loading } = useQueryDocuments<Announcement>(
+  const { data: announcements, loading, error } = useQueryDocuments<Announcement>(
     'announcements',
     filters,
     'publishedDate',
@@ -85,6 +85,13 @@ export default function AnnouncementsPage() {
             </div>
           </div>
         </div>
+
+        {/* Error State */}
+        {!loading && error && (
+          <div className="rounded-lg border border-error/50 bg-error/5 p-6 text-center">
+            <p className="text-error">Failed to load announcements: {error}</p>
+          </div>
+        )}
 
         {/* Loading State */}
         {loading && (

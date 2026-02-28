@@ -55,5 +55,29 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+
+    // Faculty - Published content is public, admin can manage
+    match /faculty/{document} {
+      allow read: if resource.data.isPublished == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Gallery - Published content is public, admin can manage
+    match /gallery/{document} {
+      allow read: if resource.data.isPublished == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Media Files - Admin only
+    match /mediaFiles/{document} {
+      allow read, write: if isAdmin();
+    }
+
+    // Mail collection - Trigger Email extension reads; anyone can create
+    // (contact form creates documents, Cloud Functions also write here)
+    match /mail/{document} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
   }
 }

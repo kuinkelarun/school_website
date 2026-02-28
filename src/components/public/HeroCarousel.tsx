@@ -3,9 +3,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLocale } from 'next-intl';
-import { useCollection } from '@/hooks/useFirestore';
+import { useCollection, useDocument } from '@/hooks/useFirestore';
 import { where, orderBy } from 'firebase/firestore';
-import type { HeroImage } from '@/types';
+import type { HeroImage, SiteSettings } from '@/types';
 import { cn } from '@/lib/utils';
 
 const BYPASS = process.env.NEXT_PUBLIC_BYPASS_AUTH === 'true';
@@ -26,6 +26,9 @@ export function HeroCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [bypassImages, setBypassImages] = useState<HeroImage[]>([]);
+
+  // Fetch site settings for fallback hero text
+  const { data: settings } = useDocument<SiteSettings>('siteSettings', 'main');
 
   // Load bypass images from localStorage on mount
   useEffect(() => {
@@ -73,13 +76,36 @@ export function HeroCarousel() {
   }
 
   if (!heroImages.length) {
+    const heroSchoolName = settings
+      ? locale === 'ne' && settings.schoolNameNe
+        ? settings.schoolNameNe
+        : settings.schoolName
+      : '';
+    const heroTagline = settings
+      ? locale === 'ne' && settings.taglineNe
+        ? settings.taglineNe
+        : settings.tagline
+      : '';
+
     return (
       <div className="relative flex h-[400px] w-full items-center justify-center bg-gradient-to-r from-primary to-secondary md:h-[500px] lg:h-[600px]">
         <div className="text-center text-white">
-          <h1 className="mb-4 text-4xl font-bold md:text-5xl lg:text-6xl">
-            Welcome to Our School
-          </h1>
-          <p className="text-xl md:text-2xl">Quality Education for a Brighter Future</p>
+          {heroSchoolName ? (
+            <>
+              <h1 className="mb-4 text-4xl font-bold md:text-5xl lg:text-6xl">
+                {heroSchoolName}
+              </h1>
+              {heroTagline && (
+                <p className="text-xl md:text-2xl">{heroTagline}</p>
+              )}
+            </>
+          ) : (
+            /* Still loading settings — show skeleton */
+            <>
+              <div className="mx-auto mb-4 h-12 w-80 animate-pulse rounded bg-white/20 md:h-14" />
+              <div className="mx-auto h-6 w-64 animate-pulse rounded bg-white/10" />
+            </>
+          )}
         </div>
       </div>
     );

@@ -15,7 +15,7 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Fetch site settings for school name & logo
-  const { data: settings } = useDocument<SiteSettings>('siteSettings', 'main');
+  const { data: settings, loading: settingsLoading } = useDocument<SiteSettings>('siteSettings', 'main');
   const schoolName = settings
     ? locale === 'ne' && settings.schoolNameNe
       ? settings.schoolNameNe
@@ -27,6 +27,7 @@ export function Header() {
     { href: `/${locale}`, label: t('home') },
     { href: `/${locale}/about`, label: t('about') },
     { href: `/${locale}/announcements`, label: t('announcements') },
+    { href: `/${locale}/articles`, label: t('articles') },
     { href: `/${locale}/programs`, label: t('programs') },
     { href: `/${locale}/events`, label: t('events') },
     { href: `/${locale}/gallery`, label: t('gallery') },
@@ -39,7 +40,13 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href={`/${locale}`} className="flex items-center space-x-2">
-            {logoUrl ? (
+            {settingsLoading ? (
+              /* Skeleton while settings load */
+              <>
+                <div className="h-10 w-10 animate-pulse rounded-full bg-muted" />
+                <div className="hidden h-5 w-32 animate-pulse rounded bg-muted sm:block" />
+              </>
+            ) : logoUrl ? (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img
                 src={logoUrl}
@@ -53,9 +60,11 @@ export function Header() {
                 <span className="text-xl font-bold">{(schoolName || 'S')[0]}</span>
               </div>
             )}
-            <span className="hidden font-heading text-xl font-bold sm:inline-block">
-              {schoolName || 'School Name'}
-            </span>
+            {!settingsLoading && (
+              <span className="hidden font-heading text-xl font-bold sm:inline-block">
+                {schoolName}
+              </span>
+            )}
           </Link>
 
           {/* Desktop Navigation */}

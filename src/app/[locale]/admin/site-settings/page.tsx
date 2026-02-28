@@ -31,6 +31,8 @@ const EMPTY_SETTINGS: Omit<SiteSettings, 'id'> = {
   addressNe: '',
   phone: '',
   email: '',
+  officeHours: '',
+  officeHoursNe: '',
   socialMedia: {},
   mapEmbedUrl: '',
   aboutContent: '',
@@ -63,6 +65,10 @@ export default function SiteSettingsPage() {
   const [socialYoutube, setSocialYoutube] = useState('');
   const [mapEmbedUrl, setMapEmbedUrl] = useState('');
 
+  // Office hours state
+  const [officeHours, setOfficeHours] = useState('');
+  const [officeHoursNe, setOfficeHoursNe] = useState('');
+
   // Logo upload state
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -87,6 +93,8 @@ export default function SiteSettingsPage() {
       setSocialInstagram(settings.socialMedia?.instagram || '');
       setSocialYoutube(settings.socialMedia?.youtube || '');
       setMapEmbedUrl(settings.mapEmbedUrl || '');
+      setOfficeHours(settings.officeHours || '');
+      setOfficeHoursNe(settings.officeHoursNe || '');
     }
   }, [settings]);
 
@@ -148,6 +156,8 @@ export default function SiteSettingsPage() {
         phone,
         email,
         logoUrl: finalLogoUrl,
+        officeHours: officeHours || '',
+        officeHoursNe: officeHoursNe || '',
         socialMedia: {
           ...(socialFacebook ? { facebook: socialFacebook } : {}),
           ...(socialTwitter ? { twitter: socialTwitter } : {}),
@@ -351,6 +361,26 @@ export default function SiteSettingsPage() {
               onChange={(e) => setAddressNe(e.target.value)}
               className="w-full rounded-lg border bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="नेपालीमा ठेगाना"
+            />
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium">{t('officeHoursEn')}</label>
+            <input
+              type="text"
+              value={officeHours}
+              onChange={(e) => setOfficeHours(e.target.value)}
+              className="w-full rounded-lg border bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder={t('officeHoursEnPlaceholder')}
+            />
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium">{t('officeHoursNe')}</label>
+            <input
+              type="text"
+              value={officeHoursNe}
+              onChange={(e) => setOfficeHoursNe(e.target.value)}
+              className="w-full rounded-lg border bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder={t('officeHoursNePlaceholder')}
             />
           </div>
         </div>

@@ -12,19 +12,19 @@ export function Footer() {
   const tNav = useTranslations('nav');
   const locale = useLocale();
 
-  const { data: settings } = useDocument<SiteSettings>('siteSettings', 'main');
+  const { data: settings, loading: settingsLoading } = useDocument<SiteSettings>('siteSettings', 'main');
 
   const schoolName = settings
     ? locale === 'ne' && settings.schoolNameNe ? settings.schoolNameNe : settings.schoolName
-    : 'School Name';
+    : '';
   const address = settings
     ? locale === 'ne' && settings.addressNe ? settings.addressNe : settings.address
-    : '123 School Street, City, Nepal';
-  const phone = settings?.phone || '+977-1-1234567';
-  const email = settings?.email || 'info@schoolname.edu.np';
+    : '';
+  const phone = settings?.phone || '';
+  const email = settings?.email || '';
   const tagline = settings
     ? locale === 'ne' && settings.taglineNe ? settings.taglineNe : settings.tagline
-    : 'Providing quality education. Empowering students to achieve their dreams.';
+    : '';
 
   const currentYear = new Date().getFullYear();
 
@@ -50,12 +50,26 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {/* About Section */}
           <div>
-            <h3 className="mb-4 font-heading text-lg font-semibold">
-              {schoolName}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {tagline}
-            </p>
+            {settingsLoading ? (
+              <>
+                <div className="mb-4 h-5 w-40 animate-pulse rounded bg-muted-foreground/20" />
+                <div className="space-y-2">
+                  <div className="h-3 w-full animate-pulse rounded bg-muted-foreground/10" />
+                  <div className="h-3 w-3/4 animate-pulse rounded bg-muted-foreground/10" />
+                </div>
+              </>
+            ) : (
+              <>
+                <h3 className="mb-4 font-heading text-lg font-semibold">
+                  {schoolName}
+                </h3>
+                {tagline && (
+                  <p className="text-sm text-muted-foreground">
+                    {tagline}
+                  </p>
+                )}
+              </>
+            )}
           </div>
 
           {/* Quick Links */}
@@ -82,26 +96,34 @@ export function Footer() {
             <h3 className="mb-4 font-heading text-lg font-semibold">
               {t('contactInfo')}
             </h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              {address && (
-                <li className="flex items-start space-x-2">
-                  <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" />
-                  <span>{address}</span>
-                </li>
-              )}
-              {phone && (
-                <li className="flex items-center space-x-2">
-                  <Phone className="h-4 w-4 flex-shrink-0" />
-                  <span>{phone}</span>
-                </li>
-              )}
-              {email && (
-                <li className="flex items-center space-x-2">
-                  <Mail className="h-4 w-4 flex-shrink-0" />
-                  <span>{email}</span>
-                </li>
-              )}
-            </ul>
+            {settingsLoading ? (
+              <div className="space-y-2">
+                <div className="h-3 w-48 animate-pulse rounded bg-muted-foreground/10" />
+                <div className="h-3 w-32 animate-pulse rounded bg-muted-foreground/10" />
+                <div className="h-3 w-44 animate-pulse rounded bg-muted-foreground/10" />
+              </div>
+            ) : (
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                {address && (
+                  <li className="flex items-start space-x-2">
+                    <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                    <span>{address}</span>
+                  </li>
+                )}
+                {phone && (
+                  <li className="flex items-center space-x-2">
+                    <Phone className="h-4 w-4 flex-shrink-0" />
+                    <span>{phone}</span>
+                  </li>
+                )}
+                {email && (
+                  <li className="flex items-center space-x-2">
+                    <Mail className="h-4 w-4 flex-shrink-0" />
+                    <span>{email}</span>
+                  </li>
+                )}
+              </ul>
+            )}
           </div>
 
             {/* Social Media */}
@@ -130,7 +152,7 @@ export function Footer() {
 
         {/* Bottom Section */}
         <div className="mt-8 border-t border-muted pt-8 text-center text-sm text-muted-foreground">
-          <p>© {currentYear} {schoolName}. All rights reserved.</p>
+          <p>© {currentYear} {schoolName || '...'}. All rights reserved.</p>
           <p className="mt-2">{t('poweredBy')}</p>
         </div>
       </div>

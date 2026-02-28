@@ -158,6 +158,8 @@ export interface SiteSettings {
   addressNe: string;
   phone: string;
   email: string;
+  officeHours?: string;
+  officeHoursNe?: string;
   socialMedia: SocialMedia;
   mapEmbedUrl?: string;
   aboutContent: string;
@@ -172,6 +174,31 @@ export interface SocialMedia {
   instagram?: string;
   youtube?: string;
 }
+
+// ============================================================================
+// Faculty / Leadership
+// ============================================================================
+
+export type FacultyCategory = 'principal' | 'teacher' | 'staff';
+
+export interface FacultyMember extends BaseDocument {
+  name: string;
+  nameNe?: string;
+  role: string;
+  roleNe?: string;
+  bio?: string;
+  bioNe?: string;
+  email?: string;
+  photoUrl?: string;
+  category: FacultyCategory;
+  memberType?: FacultyMemberType; // 'faculty' | 'former' | 'board' — defaults to 'faculty' when absent
+  displayOrder: number;
+  isPublished: boolean;
+}
+
+export type FacultyMemberType = 'faculty' | 'former' | 'board';
+
+export type FacultyMemberFormData = Omit<FacultyMember, 'id' | 'createdAt' | 'updatedAt'>;
 
 // ============================================================================
 // Gallery
@@ -290,4 +317,48 @@ export interface CategoryFilterOption {
 export interface ValidationError {
   field: string;
   message: string;
+}
+
+// ============================================================================
+// Article
+// ============================================================================
+
+export type ArticleCategory = 'sports' | 'arts' | 'academics' | 'achievements' | 'general';
+export type SubmitterType = 'student' | 'teacher' | 'parent' | 'alumni' | 'other';
+export type SubmissionStatus = 'pending' | 'approved' | 'rejected';
+
+export interface Article extends BaseDocument {
+  title: string;
+  titleNe?: string;
+  slug: string;
+  content: string; // HTML content
+  contentNe?: string;
+  excerpt?: string;
+  excerptNe?: string;
+  coverImageUrl?: string;
+  category: ArticleCategory;
+  authorName: string;
+  authorNameNe?: string;
+  isPublished: boolean;
+  isFeatured: boolean;
+  publishedDate?: Timestamp | Date;
+  viewCount: number;
+  submissionId?: string; // link back to the submission that spawned this article
+}
+
+export interface ArticleSubmission extends BaseDocument {
+  title: string;
+  titleNe?: string;
+  submitterName: string;
+  submitterEmail: string;
+  submitterType: SubmitterType;
+  contentText?: string; // written inline
+  documentUrl?: string; // Storage URL of uploaded .docx
+  documentName?: string; // original filename
+  extractedText?: string; // mammoth-extracted text from .docx
+  category: ArticleCategory;
+  status: SubmissionStatus;
+  adminNotes?: string;
+  reviewedAt?: Timestamp | Date;
+  reviewedBy?: string;
 }

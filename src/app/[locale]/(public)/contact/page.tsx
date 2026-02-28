@@ -11,6 +11,10 @@ import { addDocument } from '@/lib/firebase/firestore';
 import { useDocument } from '@/hooks/useFirestore';
 import type { ContactFormData, SiteSettings } from '@/types';
 
+// ─── Bypass mode helper ──────────────────────────────────────────────────────
+const BYPASS = process.env.NEXT_PUBLIC_BYPASS_AUTH === 'true';
+// ─────────────────────────────────────────────────────────────────────────────
+
 const contactFormSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
@@ -36,6 +40,9 @@ export default function ContactPage() {
   const phone = settings?.phone || '+977-1-1234567';
   const email = settings?.email || 'info@schoolname.edu.np';
   const mapUrl = settings?.mapEmbedUrl || '';
+  const officeHoursDisplay = settings
+    ? locale === 'ne' && settings.officeHoursNe ? settings.officeHoursNe : settings.officeHours
+    : '';
 
   const socialLinks = [
     settings?.socialMedia?.facebook && { icon: Facebook, href: settings.socialMedia.facebook, label: 'Facebook' },
@@ -66,6 +73,35 @@ export default function ContactPage() {
       };
 
       await addDocument('contactMessages', contactData);
+
+      // ── Firebase Trigger Email extension ────────────────────────────────────
+      // Requires: Firebase Trigger Email extension installed in your project.
+      // Setup: Firebase Console → Extensions → Trigger Email from Firestore
+      // Configure SMTP with Gmail:
+      //   SMTP URI: smtps://you%40gmail.com:<app-password>@smtp.gmail.com:465
+      //   (Use a Gmail App Password, not your regular password)
+      //   DEFAULT_FROM: you@gmail.com
+      // The extension watches the "mail" collection and sends each document.
+      // ────────────────────────────────────────────────────────────────────────
+      if (!BYPASS && settings?.email) {
+        await addDocument('mail', {
+          to: [settings.email],
+          message: {
+            subject: `[Contact Form] ${data.subject}`,
+            html: `
+              <h2>New Contact Form Submission</h2>
+              <p><strong>Name:</strong> ${data.name}</p>
+              <p><strong>Email:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+              ${data.phone ? `<p><strong>Phone:</strong> ${data.phone}</p>` : ''}
+              <p><strong>Subject:</strong> ${data.subject}</p>
+              <hr />
+              <p><strong>Message:</strong></p>
+              <p>${data.message.replace(/\n/g, '<br />')}</p>
+            `,
+          },
+        });
+      }
+
       setSubmitSuccess(true);
       reset();
     } catch (error: any) {
@@ -223,15 +259,17 @@ export default function ContactPage() {
                 )}
 
                 {/* Office Hours */}
-                <div className="flex items-start space-x-3">
-                  <Clock className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
-                  <div>
-                    <p className="font-medium">{t('officeHours')}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Sunday - Friday: 8:00 AM - 4:00 PM
-                    </p>
+                {officeHoursDisplay && (
+                  <div className="flex items-start space-x-3">
+                    <Clock className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
+                    <div>
+                      <p className="font-medium">{t('officeHours')}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {officeHoursDisplay}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
 

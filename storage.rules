@@ -52,5 +52,17 @@ service firebase.storage {
       allow read: if true;
       allow write: if isAdmin() && isValidSize();
     }
+
+    // Faculty photos - Public read, admin write
+    match /faculty/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && isImageFile() && isValidSize();
+    }
+
+    // Gallery - Public read, admin write
+    match /gallery/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidSize();
+    }
   }
 }

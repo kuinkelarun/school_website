@@ -17,6 +17,8 @@ import {
   X,
   Info,
   Images,
+  Users,
+  Newspaper,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
@@ -31,8 +33,10 @@ export function AdminSidebar() {
     { href: '/en/admin/dashboard', icon: LayoutDashboard, label: t('dashboard') },
     { href: '/en/admin/hero-images', icon: Image, label: t('heroImages') },
     { href: '/en/admin/announcements', icon: Megaphone, label: t('announcements') },
+    { href: '/en/admin/articles', icon: Newspaper, label: t('articles') },
     { href: '/en/admin/events', icon: Calendar, label: t('events') },
     { href: '/en/admin/programs', icon: GraduationCap, label: t('programs') },
+    { href: '/en/admin/faculty', icon: Users, label: t('faculty') },
     { href: '/en/admin/media', icon: FolderOpen, label: t('media') },
     { href: '/en/admin/gallery', icon: Images, label: t('gallery') },
     { href: '/en/admin/about', icon: Info, label: t('about') },
