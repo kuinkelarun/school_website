@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Globe } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { addDocument } from '@/lib/firebase/firestore';
+import { toNepalDateString } from '@/lib/utils';
 import slugify from 'slugify';
 import type { AnnouncementFormData } from '@/types';
 
@@ -15,12 +16,12 @@ export default function NewAnnouncementPage() {
   const t = useTranslations('admin.announcements');
   const { adminUser } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const publishIntent = useRef<'draft' | 'publish'>('draft');
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<Partial<AnnouncementFormData>>({
     defaultValues: {
       category: 'general',
       isFeatured: false,
-      isPublished: true,
     },
   });
 
@@ -39,7 +40,8 @@ export default function NewAnnouncementPage() {
         authorName: adminUser?.fullName || 'Admin',
         viewCount: 0,
         attachments: [],
-        publishedDate: data.isPublished ? new Date().toISOString() : null,
+        isPublished: publishIntent.current === 'publish',
+        publishedDate: publishIntent.current === 'publish' ? toNepalDateString() : null,
       };
 
       await addDocument('announcements', announcementData);
@@ -164,15 +166,6 @@ export default function NewAnnouncementPage() {
                 />
                 <span className="text-sm">{t('featured')}</span>
               </label>
-
-              <label className="flex items-center space-x-2">
-                <input
-                  {...register('isPublished')}
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
-                />
-                <span className="text-sm">{t('published')}</span>
-              </label>
             </div>
           </div>
         </div>
@@ -189,10 +182,20 @@ export default function NewAnnouncementPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center space-x-2 rounded-lg bg-primary px-6 py-2 font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            onClick={() => { publishIntent.current = 'draft'; }}
+            className="inline-flex items-center space-x-2 rounded-lg border px-6 py-2 font-semibold hover:bg-muted disabled:opacity-50"
           >
             <Save className="h-5 w-5" />
-            <span>{isSubmitting ? 'Creating...' : 'Create Announcement'}</span>
+            <span>{isSubmitting && publishIntent.current === 'draft' ? 'Saving...' : 'Save as Draft'}</span>
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            onClick={() => { publishIntent.current = 'publish'; }}
+            className="inline-flex items-center space-x-2 rounded-lg bg-primary px-6 py-2 font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          >
+            <Globe className="h-5 w-5" />
+            <span>{isSubmitting && publishIntent.current === 'publish' ? 'Publishing...' : 'Create & Publish'}</span>
           </button>
         </div>
       </form>

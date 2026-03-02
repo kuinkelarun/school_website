@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Plus, Pencil, Trash2, Eye } from 'lucide-react';
+import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight } from 'lucide-react';
 import { useCollection, useDeleteDocument } from '@/hooks/useFirestore';
+import { updateDocument } from '@/lib/firebase/firestore';
 import { orderBy } from 'firebase/firestore';
 import type { Event } from '@/types';
-import { formatDate } from '@/lib/utils';
+import { NepaliDate } from '@/components/shared/NepaliDate';
 
 export default function EventsAdminPage() {
   const router = useRouter();
@@ -41,6 +42,18 @@ export default function EventsAdminPage() {
     } catch (error) {
       console.error('Error deleting event:', error);
       alert('Failed to delete event');
+    }
+  };
+
+  const handleTogglePublish = async (event: Event) => {
+    try {
+      await updateDocument('events', event.id, {
+        isPublished: !event.isPublished,
+      });
+      refetch();
+    } catch (error) {
+      console.error('Error toggling publish status:', error);
+      alert('Failed to update event');
     }
   };
 
@@ -151,36 +164,22 @@ export default function EventsAdminPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      {formatDate(
-                        typeof event.startDate === 'object' && 'toDate' in event.startDate
-                          ? event.startDate.toDate()
-                          : event.startDate,
-                        'en'
-                      )}
+                      <NepaliDate date={event.startDate} locale="en" format="short" showAdWhileLoading />
                     </td>
                     <td className="px-4 py-3 text-sm text-muted-foreground">
                       {event.location}
                     </td>
                     <td className="px-4 py-3">
-                      <span
-                        className={`rounded-full px-2 py-1 text-xs font-semibold ${
-                          event.isPublished
-                            ? 'bg-success/10 text-success'
-                            : 'bg-muted text-muted-foreground'
-                        }`}
-                      >
-                        {event.isPublished ? t('published') : t('draft')}
-                      </span>
+                      <button onClick={() => handleTogglePublish(event)} className="inline-flex items-center gap-1 text-xs">
+                        {event.isPublished ? (
+                          <><ToggleRight className="h-5 w-5 text-emerald-500" /><span className="text-emerald-600">{t('published')}</span></>
+                        ) : (
+                          <><ToggleLeft className="h-5 w-5 text-muted-foreground" /><span className="text-muted-foreground">{t('draft')}</span></>
+                        )}
+                      </button>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end space-x-2">
-                        <button
-                          onClick={() => window.open(`/en/events#${event.slug}`, '_blank')}
-                          className="rounded-lg bg-muted p-2 transition-colors hover:bg-muted/80"
-                          title="View"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
                         <button
                           onClick={() => router.push(`/en/admin/events/${event.id}/edit`)}
                           className="rounded-lg bg-primary/10 p-2 text-primary transition-colors hover:bg-primary/20"

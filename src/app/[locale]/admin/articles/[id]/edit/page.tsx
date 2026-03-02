@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { ArrowLeft, Save, ImagePlus, X, Loader2 } from 'lucide-react';
 import { getDocument, updateDocument } from '@/lib/firebase/firestore';
+import { toNepalDateString } from '@/lib/utils';
 import { uploadFile } from '@/lib/firebase/storage';
 import type { Article, ArticleCategory } from '@/types';
 
@@ -163,7 +164,7 @@ export default function EditArticlePage() {
         isFeatured: form.isFeatured,
         isPublished: nowPublished,
         ...(wasUnpublished && nowPublished && !article?.publishedDate
-          ? { publishedDate: new Date().toISOString() }
+          ? { publishedDate: toNepalDateString() }
           : {}),
       });
 

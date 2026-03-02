@@ -5,7 +5,8 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Calendar, MapPin } from 'lucide-react';
 import { useQueryDocuments } from '@/hooks/useFirestore';
 import type { Event, EventCategory } from '@/types';
-import { formatDate, toDateSafe } from '@/lib/utils';
+import { toDateSafe } from '@/lib/utils';
+import { NepaliDate } from '@/components/shared/NepaliDate';
 
 export default function EventsPage() {
   const t = useTranslations('events');
@@ -114,9 +115,12 @@ export default function EventsPage() {
                     {/* Date */}
                     <div className="mb-3 flex items-center space-x-2 text-sm text-primary">
                       <Calendar className="h-4 w-4" />
-                      <span>{formatDate(startDate, locale)}</span>
-                      {startDate.toDateString() !== endDate.toDateString() && (
-                        <span>- {formatDate(endDate, locale)}</span>
+                      <NepaliDate date={event.startDate} locale={locale} showAdWhileLoading />
+                      {startDate && endDate && startDate.toDateString() !== endDate.toDateString() && (
+                        <>
+                          <span>-</span>
+                          <NepaliDate date={event.endDate} locale={locale} showAdWhileLoading />
+                        </>
                       )}
                     </div>
 

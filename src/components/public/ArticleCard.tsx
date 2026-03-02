@@ -4,19 +4,7 @@ import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { Calendar, User, Tag } from 'lucide-react';
 import type { Article, ArticleCategory } from '@/types';
-
-function toDateSafe(val: unknown): Date | null {
-  if (!val) return null;
-  if (val instanceof Date) return val;
-  if (typeof val === 'object' && val !== null && 'toDate' in val) {
-    return (val as { toDate: () => Date }).toDate();
-  }
-  if (typeof val === 'string' || typeof val === 'number') {
-    const d = new Date(val);
-    return isNaN(d.getTime()) ? null : d;
-  }
-  return null;
-}
+import { NepaliDate } from '@/components/shared/NepaliDate';
 
 function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -51,14 +39,6 @@ export function ArticleCard({ article }: Props) {
         truncate(stripHtml(locale === 'ne' && article.contentNe ? article.contentNe : article.content), 160);
   const author =
     locale === 'ne' && article.authorNameNe ? article.authorNameNe : article.authorName;
-  const dateObj = toDateSafe(article.publishedDate);
-  const dateStr = dateObj
-    ? dateObj.toLocaleDateString(locale === 'ne' ? 'ne-NP' : 'en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      })
-    : '';
 
   const categoryLabel = t(`categories.${article.category}`);
   const colorClass = CATEGORY_COLORS[article.category] ?? CATEGORY_COLORS.general;
@@ -109,10 +89,10 @@ export function ArticleCard({ article }: Props) {
             <User className="h-3 w-3" />
             {author}
           </span>
-          {dateStr && (
+          {article.publishedDate && (
             <span className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
-              {dateStr}
+              <NepaliDate date={article.publishedDate} locale={locale} format="short" showAdWhileLoading />
             </span>
           )}
         </div>

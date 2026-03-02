@@ -9,19 +9,7 @@ import { where } from 'firebase/firestore';
 import { useCollection } from '@/hooks/useFirestore';
 import { updateDocument } from '@/lib/firebase/firestore';
 import type { Article, ArticleCategory } from '@/types';
-
-function toDateSafe(val: unknown): Date | null {
-  if (!val) return null;
-  if (val instanceof Date) return val;
-  if (typeof val === 'object' && val !== null && 'toDate' in val) {
-    return (val as { toDate: () => Date }).toDate();
-  }
-  if (typeof val === 'string' || typeof val === 'number') {
-    const d = new Date(val);
-    return isNaN(d.getTime()) ? null : d;
-  }
-  return null;
-}
+import { NepaliDate } from '@/components/shared/NepaliDate';
 
 const CATEGORY_COLORS: Record<ArticleCategory, string> = {
   sports: 'bg-emerald-100 text-emerald-700',
@@ -85,12 +73,6 @@ export default function ArticleDetailPage() {
   const title = locale === 'ne' && article.titleNe ? article.titleNe : article.title;
   const content = locale === 'ne' && article.contentNe ? article.contentNe : article.content;
   const author = locale === 'ne' && article.authorNameNe ? article.authorNameNe : article.authorName;
-  const dateObj = toDateSafe(article.publishedDate);
-  const dateStr = dateObj
-    ? dateObj.toLocaleDateString(locale === 'ne' ? 'ne-NP' : 'en-US', {
-        year: 'numeric', month: 'long', day: 'numeric',
-      })
-    : '';
 
   const colorClass = CATEGORY_COLORS[article.category] ?? CATEGORY_COLORS.general;
 
@@ -138,10 +120,10 @@ export default function ArticleDetailPage() {
             <User className="h-4 w-4" />
             {t('by')} {author}
           </span>
-          {dateStr && (
+          {article.publishedDate && (
             <span className="flex items-center gap-1.5">
               <Calendar className="h-4 w-4" />
-              {t('publishedOn')}: {dateStr}
+              {t('publishedOn')}: <NepaliDate date={article.publishedDate} locale={locale} showAdWhileLoading />
             </span>
           )}
           <span className="flex items-center gap-1.5">

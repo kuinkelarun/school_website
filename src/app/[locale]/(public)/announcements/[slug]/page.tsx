@@ -7,7 +7,7 @@ import { Calendar, User, ArrowLeft, Download } from 'lucide-react';
 import { useCollection } from '@/hooks/useFirestore';
 import { where } from 'firebase/firestore';
 import type { Announcement } from '@/types';
-import { formatDate } from '@/lib/utils';
+import { NepaliDate } from '@/components/shared/NepaliDate';
 import { updateDocument } from '@/lib/firebase/firestore';
 
 export default function AnnouncementDetailPage() {
@@ -100,15 +100,11 @@ export default function AnnouncementDetailPage() {
           <div className="mb-8 flex flex-wrap gap-6 text-sm text-muted-foreground">
             <div className="flex items-center space-x-2">
               <Calendar className="h-5 w-5" />
-              <span>
+              <span className="flex items-center gap-1">
                 {t('publishedOn')}{' '}
-                {announcement.publishedDate &&
-                  formatDate(
-                    typeof announcement.publishedDate === 'object' && 'toDate' in announcement.publishedDate
-                      ? announcement.publishedDate.toDate()
-                      : announcement.publishedDate,
-                    locale
-                  )}
+                {announcement.publishedDate && (
+                  <NepaliDate date={announcement.publishedDate} locale={locale} showAdWhileLoading />
+                )}
               </span>
             </div>
             <div className="flex items-center space-x-2">

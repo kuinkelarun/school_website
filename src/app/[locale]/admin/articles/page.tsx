@@ -9,9 +9,10 @@ import {
 } from 'lucide-react';
 import { useCollection, useDeleteDocument } from '@/hooks/useFirestore';
 import { addDocument, updateDocument } from '@/lib/firebase/firestore';
+import { toNepalDateString } from '@/lib/utils';
 import { orderBy } from 'firebase/firestore';
 import type { Article, ArticleSubmission } from '@/types';
-import { formatDate } from '@/lib/utils';
+import { NepaliDate } from '@/components/shared/NepaliDate';
 import slugify from 'slugify';
 
 type Tab = 'articles' | 'submissions';
@@ -59,7 +60,7 @@ export default function AdminArticlesPage() {
       await updateDocument('articles', article.id, {
         isPublished: newPublished,
         ...(newPublished && !article.publishedDate
-          ? { publishedDate: new Date().toISOString() }
+          ? { publishedDate: toNepalDateString() }
           : {}),
       });
       refetchArticles();
@@ -205,7 +206,7 @@ export default function AdminArticlesPage() {
                           {article.isFeatured && <Star className="h-3.5 w-3.5 text-amber-400 flex-shrink-0" />}
                           <span className="font-medium line-clamp-1">{article.title}</span>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">{formatDate(article.createdAt)}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5"><NepaliDate date={article.createdAt} locale="en" format="short" showAdWhileLoading /></p>
                       </td>
                       <td className="px-4 py-3 hidden sm:table-cell">
                         <span className="capitalize text-xs rounded-full border px-2 py-0.5">{article.category}</span>
@@ -288,7 +289,7 @@ export default function AdminArticlesPage() {
                         </div>
                         <h3 className="font-semibold line-clamp-1">{sub.title}</h3>
                         <p className="text-xs text-muted-foreground mt-0.5">
-                          By {sub.submitterName} ({sub.submitterEmail}) · {sub.submitterType} · {formatDate(sub.createdAt)}
+                          By {sub.submitterName} ({sub.submitterEmail}) · {sub.submitterType} · <NepaliDate date={sub.createdAt} locale="en" format="short" showAdWhileLoading />
                         </p>
                         {sub.adminNotes && (
                           <p className="mt-1 text-xs text-muted-foreground italic">Note: {sub.adminNotes}</p>

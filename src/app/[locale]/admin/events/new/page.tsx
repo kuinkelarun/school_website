@@ -1,26 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Globe } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { addDocument } from '@/lib/firebase/firestore';
 import { Timestamp } from 'firebase/firestore';
 import slugify from 'slugify';
 import type { EventFormData } from '@/types';
+import NepaliDatePicker from '@/components/admin/NepaliDatePicker';
 
 export default function NewEventPage() {
   const router = useRouter();
   const t = useTranslations('admin.events');
   const { adminUser } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const publishIntent = useRef<'draft' | 'publish'>('draft');
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<Partial<EventFormData>>({
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<Partial<EventFormData>>({
     defaultValues: {
       category: 'academic',
-      isPublished: false,
     },
   });
 
@@ -42,6 +43,7 @@ export default function NewEventPage() {
         slug,
         startDate,
         endDate,
+        isPublished: publishIntent.current === 'publish',
         authorId: adminUser?.id || '',
         authorName: adminUser?.fullName || 'Admin',
       };
@@ -144,30 +146,19 @@ export default function NewEventPage() {
 
             {/* Date & Time */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-medium">
-                  Start Date & Time <span className="text-error">*</span>
-                </label>
-                <input
-                  {...register('startDate', { required: 'Start date is required' })}
-                  type="datetime-local"
-                  className="w-full rounded-lg border bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-                {errors.startDate && (
-                  <p className="mt-1 text-sm text-error">{errors.startDate.message}</p>
-                )}
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-medium">
-                  End Date & Time
-                </label>
-                <input
-                  {...register('endDate')}
-                  type="datetime-local"
-                  min={watchStartDate ? (typeof watchStartDate === 'string' ? watchStartDate : watchStartDate instanceof Date ? watchStartDate.toISOString().slice(0, 16) : (watchStartDate as any).toDate().toISOString().slice(0, 16)) : undefined}
-                  className="w-full rounded-lg border bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
+              <NepaliDatePicker
+                label="Start Date & Time"
+                required
+                value={watchStartDate ? String(watchStartDate) : undefined}
+                onChange={(val) => setValue('startDate', val as any, { shouldValidate: true })}
+                error={errors.startDate?.message}
+              />
+              <NepaliDatePicker
+                label="End Date & Time"
+                value={watch('endDate') ? String(watch('endDate')) : undefined}
+                onChange={(val) => setValue('endDate', val as any)}
+                min={watchStartDate ? String(watchStartDate) : undefined}
+              />
             </div>
 
             {/* Location */}
@@ -201,18 +192,6 @@ export default function NewEventPage() {
                 <option value="other">Other</option>
               </select>
             </div>
-
-            {/* Published Checkbox */}
-            <div className="space-y-2">
-              <label className="flex items-center space-x-2">
-                <input
-                  {...register('isPublished')}
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
-                />
-                <span className="text-sm">{t('published')}</span>
-              </label>
-            </div>
           </div>
         </div>
 
@@ -228,10 +207,20 @@ export default function NewEventPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center space-x-2 rounded-lg bg-primary px-6 py-2 font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            onClick={() => { publishIntent.current = 'draft'; }}
+            className="inline-flex items-center space-x-2 rounded-lg border px-6 py-2 font-semibold hover:bg-muted disabled:opacity-50"
           >
             <Save className="h-5 w-5" />
-            <span>{isSubmitting ? 'Creating...' : 'Create Event'}</span>
+            <span>{isSubmitting && publishIntent.current === 'draft' ? 'Saving...' : 'Save as Draft'}</span>
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            onClick={() => { publishIntent.current = 'publish'; }}
+            className="inline-flex items-center space-x-2 rounded-lg bg-primary px-6 py-2 font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          >
+            <Globe className="h-5 w-5" />
+            <span>{isSubmitting && publishIntent.current === 'publish' ? 'Publishing...' : 'Create & Publish'}</span>
           </button>
         </div>
       </form>

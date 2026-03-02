@@ -1,15 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Globe } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { getDocument, updateDocument } from '@/lib/firebase/firestore';
+import { toDateSafe } from '@/lib/utils';
 import { Timestamp } from 'firebase/firestore';
 import slugify from 'slugify';
 import type { Event, EventFormData } from '@/types';
+import NepaliDatePicker from '@/components/admin/NepaliDatePicker';
 
 export default function EditEventPage() {
   const router = useRouter();
@@ -20,8 +22,9 @@ export default function EditEventPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [event, setEvent] = useState<Event | null>(null);
+  const publishIntent = useRef<'draft' | 'publish'>('draft');
 
-  const { register, handleSubmit, watch, reset, formState: { errors } } = useForm<Partial<EventFormData>>();
+  const { register, handleSubmit, watch, reset, setValue, formState: { errors } } = useForm<Partial<EventFormData>>();
 
   const watchTitle = watch('title');
   const watchStartDate = watch('startDate');
@@ -33,24 +36,18 @@ export default function EditEventPage() {
         if (data) {
           setEvent(data);
 
-          // Convert Timestamps to datetime-local format
-          const startDate = typeof data.startDate === 'object' && 'toDate' in data.startDate
-            ? data.startDate.toDate()
-            : new Date(data.startDate);
-          const endDate = typeof data.endDate === 'object' && 'toDate' in data.endDate
-            ? data.endDate.toDate()
-            : new Date(data.endDate);
+          const startDate = toDateSafe(data.startDate);
+          const endDate = toDateSafe(data.endDate);
 
           reset({
             title: data.title,
             titleNe: data.titleNe,
             description: data.description,
             descriptionNe: data.descriptionNe,
-            startDate: startDate.toISOString().slice(0, 16) as any,
-            endDate: endDate.toISOString().slice(0, 16) as any,
+            startDate: !isNaN(startDate.getTime()) ? startDate.toISOString().slice(0, 16) as any : undefined,
+            endDate: !isNaN(endDate.getTime()) ? endDate.toISOString().slice(0, 16) as any : undefined,
             location: data.location,
             category: data.category,
-            isPublished: data.isPublished,
           });
         } else {
           alert('Event not found');
@@ -82,6 +79,7 @@ export default function EditEventPage() {
         slug,
         startDate,
         endDate,
+        isPublished: publishIntent.current === 'publish' ? true : event?.isPublished ?? false,
         updatedAt: Timestamp.now(),
       };
 
@@ -198,30 +196,19 @@ export default function EditEventPage() {
 
             {/* Date & Time */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-medium">
-                  Start Date & Time <span className="text-error">*</span>
-                </label>
-                <input
-                  {...register('startDate', { required: 'Start date is required' })}
-                  type="datetime-local"
-                  className="w-full rounded-lg border bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-                {errors.startDate && (
-                  <p className="mt-1 text-sm text-error">{errors.startDate.message}</p>
-                )}
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-medium">
-                  End Date & Time
-                </label>
-                <input
-                  {...register('endDate')}
-                  type="datetime-local"
-                  min={watchStartDate ? (typeof watchStartDate === 'string' ? watchStartDate : watchStartDate instanceof Date ? watchStartDate.toISOString().slice(0, 16) : (watchStartDate as any).toDate().toISOString().slice(0, 16)) : undefined}
-                  className="w-full rounded-lg border bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
+              <NepaliDatePicker
+                label="Start Date & Time"
+                required
+                value={watchStartDate ? String(watchStartDate) : undefined}
+                onChange={(val) => setValue('startDate', val as any, { shouldValidate: true })}
+                error={errors.startDate?.message}
+              />
+              <NepaliDatePicker
+                label="End Date & Time"
+                value={watch('endDate') ? String(watch('endDate')) : undefined}
+                onChange={(val) => setValue('endDate', val as any)}
+                min={watchStartDate ? String(watchStartDate) : undefined}
+              />
             </div>
 
             {/* Location */}
@@ -255,18 +242,6 @@ export default function EditEventPage() {
                 <option value="other">Other</option>
               </select>
             </div>
-
-            {/* Published Checkbox */}
-            <div className="space-y-2">
-              <label className="flex items-center space-x-2">
-                <input
-                  {...register('isPublished')}
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
-                />
-                <span className="text-sm">{t('published')}</span>
-              </label>
-            </div>
           </div>
         </div>
 
@@ -282,11 +257,34 @@ export default function EditEventPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center space-x-2 rounded-lg bg-primary px-6 py-2 font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            onClick={() => { publishIntent.current = 'draft'; }}
+            className="inline-flex items-center space-x-2 rounded-lg border px-6 py-2 font-semibold hover:bg-muted disabled:opacity-50"
           >
             <Save className="h-5 w-5" />
-            <span>{isSubmitting ? 'Updating...' : 'Update Event'}</span>
+            <span>{isSubmitting && publishIntent.current === 'draft' ? 'Saving...' : 'Save as Draft'}</span>
           </button>
+          {!event?.isPublished && (
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              onClick={() => { publishIntent.current = 'publish'; }}
+              className="inline-flex items-center space-x-2 rounded-lg bg-primary px-6 py-2 font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            >
+              <Globe className="h-5 w-5" />
+              <span>{isSubmitting && publishIntent.current === 'publish' ? 'Publishing...' : 'Save & Publish'}</span>
+            </button>
+          )}
+          {event?.isPublished && (
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              onClick={() => { publishIntent.current = 'publish'; }}
+              className="inline-flex items-center space-x-2 rounded-lg bg-primary px-6 py-2 font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            >
+              <Save className="h-5 w-5" />
+              <span>{isSubmitting && publishIntent.current === 'publish' ? 'Updating...' : 'Update Event'}</span>
+            </button>
+          )}
         </div>
       </form>
     </div>

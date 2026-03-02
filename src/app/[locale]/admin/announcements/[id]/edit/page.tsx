@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { ArrowLeft, Save } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { getDocument, updateDocument } from '@/lib/firebase/firestore';
+import { toNepalDateString } from '@/lib/utils';
 import slugify from 'slugify';
 import type { Announcement, AnnouncementFormData } from '@/types';
 
@@ -67,7 +68,7 @@ export default function EditAnnouncementPage() {
 
       // Update publishedDate if changing from draft to published
       if (data.isPublished && !announcement?.isPublished) {
-        updateData.publishedDate = new Date().toISOString() as any;
+        updateData.publishedDate = toNepalDateString() as any;
       }
 
       await updateDocument('announcements', id, updateData);

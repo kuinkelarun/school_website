@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { GraduationCap, Calendar, Phone, FileText } from 'lucide-react';
+import { Calendar, Phone, FileText, BookOpen } from 'lucide-react';
 
 export function QuickLinks() {
   const locale = useLocale();
@@ -10,11 +10,11 @@ export function QuickLinks() {
 
   const links = [
     {
-      href: `/${locale}/programs`,
-      icon: GraduationCap,
-      title: t('programs'),
-      description: 'Explore our academic programs',
-      color: 'from-blue-500 to-blue-600',
+      href: `/${locale}/announcements`,
+      icon: FileText,
+      title: t('announcements'),
+      description: 'Latest news and updates',
+      color: 'from-purple-500 to-purple-600',
     },
     {
       href: `/${locale}/events`,
@@ -24,11 +24,11 @@ export function QuickLinks() {
       color: 'from-green-500 to-green-600',
     },
     {
-      href: `/${locale}/announcements`,
-      icon: FileText,
-      title: t('announcements'),
-      description: 'Latest news and updates',
-      color: 'from-purple-500 to-purple-600',
+      href: `/${locale}/articles`,
+      icon: BookOpen,
+      title: t('articles'),
+      description: 'Stories and achievements',
+      color: 'from-blue-500 to-blue-600',
     },
     {
       href: `/${locale}/contact`,

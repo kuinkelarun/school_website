@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { Calendar, User, ArrowRight } from 'lucide-react';
+import { Calendar, ArrowRight } from 'lucide-react';
 import type { Announcement } from '@/types';
-import { formatDate, truncate, stripHtml, toDateSafe } from '@/lib/utils';
+import { truncate, stripHtml } from '@/lib/utils';
 import { cn } from '@/lib/utils';
+import { NepaliDate } from '@/components/shared/NepaliDate';
 
 interface AnnouncementCardProps {
   announcement: Announcement;
@@ -78,16 +79,15 @@ export function AnnouncementCard({ announcement }: AnnouncementCardProps) {
 
         {/* Meta Information */}
         <div className="mb-4 flex flex-wrap gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center space-x-1">
-            <Calendar className="h-4 w-4" />
-            <span>
-              {announcement.publishedDate && formatDate(toDateSafe(announcement.publishedDate), locale)}
-            </span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <User className="h-4 w-4" />
-            <span>{announcement.authorName}</span>
-          </div>
+          {announcement.publishedDate && (
+            <div className="flex items-center space-x-1">
+              <Calendar className="h-4 w-4" />
+              <span>
+                {t('publishedOn')}:&nbsp;
+                <NepaliDate date={announcement.publishedDate} locale={locale} showAdWhileLoading />
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Read More Link */}

@@ -6,10 +6,12 @@ import Link from 'next/link';
 import { ArrowRight, Calendar } from 'lucide-react';
 import { HeroCarousel } from '@/components/public/HeroCarousel';
 import { AnnouncementCard } from '@/components/public/AnnouncementCard';
+import { ArticleCard } from '@/components/public/ArticleCard';
 import { QuickLinks } from '@/components/public/QuickLinks';
+import { NepaliDate } from '@/components/shared/NepaliDate';
+import { NepaliCalendarWidget } from '@/components/public/NepaliCalendarWidget';
 import { useQueryDocuments } from '@/hooks/useFirestore';
-import type { Announcement, Event } from '@/types';
-import { formatDate, toDateSafe } from '@/lib/utils';
+import type { Announcement, Article, Event } from '@/types';
 
 export default function HomePage() {
   const t = useTranslations('home');
@@ -29,6 +31,21 @@ export default function HomePage() {
     'desc',
     6
   );
+
+  // Fetch latest articles
+  const { data: articles, loading: articlesLoading, error: articlesError } = useQueryDocuments<Article>(
+    'articles',
+    [{ field: 'isPublished', operator: '==', value: true }],
+    'publishedDate',
+    'desc',
+    3
+  );
+
+  // Sort announcements: featured first, then by date
+  const sortedAnnouncements = [...announcements].sort((a, b) => {
+    if (a.isFeatured === b.isFeatured) return 0;
+    return a.isFeatured ? -1 : 1;
+  });
 
   // Fetch upcoming events
   const { data: events, loading: eventsLoading, error: eventsError } = useQueryDocuments<Event>(
@@ -53,7 +70,12 @@ export default function HomePage() {
           <div className="mb-8 text-center">
             <h2 className="mb-2 text-3xl font-bold">{t('quickLinks')}</h2>
           </div>
-          <QuickLinks />
+          <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
+            <QuickLinks />
+            <aside className="hidden lg:block">
+              <NepaliCalendarWidget locale={locale} />
+            </aside>
+          </div>
         </div>
       </section>
 
@@ -81,9 +103,9 @@ export default function HomePage() {
             <div className="rounded-lg border border-error/50 bg-error/5 p-6 text-center">
               <p className="text-error">Failed to load announcements: {announcementsError}</p>
             </div>
-          ) : announcements.length > 0 ? (
+          ) : sortedAnnouncements.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {announcements.map((announcement) => (
+              {sortedAnnouncements.map((announcement) => (
                 <AnnouncementCard key={announcement.id} announcement={announcement} />
               ))}
             </div>
@@ -123,7 +145,6 @@ export default function HomePage() {
             <div className="grid gap-6 md:grid-cols-3">
               {events.map((event) => {
                 const title = locale === 'ne' && event.titleNe ? event.titleNe : event.title;
-                const eventDate = toDateSafe(event.startDate);
 
                 return (
                   <Link
@@ -143,7 +164,7 @@ export default function HomePage() {
                     <div className="p-6">
                       <div className="mb-3 flex items-center space-x-2 text-sm text-primary">
                         <Calendar className="h-4 w-4" />
-                        <span>{formatDate(eventDate, locale)}</span>
+                        <NepaliDate date={event.startDate} locale={locale} showAdWhileLoading />
                       </div>
                       <h3 className="mb-2 line-clamp-2 text-lg font-semibold group-hover:text-primary">
                         {title}
@@ -162,8 +183,46 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* About Section */}
+      {/* Latest Articles Section */}
       <section className="bg-muted/50 py-12 md:py-16">
+        <div className="container">
+          <div className="mb-8 flex items-center justify-between">
+            <h2 className="text-3xl font-bold">{t('latestArticles')}</h2>
+            <Link
+              href={`/${locale}/articles`}
+              className="inline-flex items-center space-x-1 text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+            >
+              <span>{tCommon('viewAll')}</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+
+          {articlesLoading ? (
+            <div className="grid gap-6 md:grid-cols-3">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="h-80 animate-pulse rounded-xl bg-muted" />
+              ))}
+            </div>
+          ) : articlesError ? (
+            <div className="rounded-lg border border-error/50 bg-error/5 p-6 text-center">
+              <p className="text-error">Failed to load articles: {articlesError}</p>
+            </div>
+          ) : articles.length > 0 ? (
+            <div className="grid gap-6 md:grid-cols-3">
+              {articles.map((article) => (
+                <ArticleCard key={article.id} article={article} />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-lg border border-dashed p-12 text-center">
+              <p className="text-muted-foreground">No articles published yet.</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section className="py-12 md:py-16">
         <div className="container">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="mb-4 text-3xl font-bold">{t('aboutUs')}</h2>

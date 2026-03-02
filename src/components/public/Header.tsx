@@ -27,9 +27,9 @@ export function Header() {
     { href: `/${locale}`, label: t('home') },
     { href: `/${locale}/about`, label: t('about') },
     { href: `/${locale}/announcements`, label: t('announcements') },
+    { href: `/${locale}/events`, label: t('events') },
     { href: `/${locale}/articles`, label: t('articles') },
     { href: `/${locale}/programs`, label: t('programs') },
-    { href: `/${locale}/events`, label: t('events') },
     { href: `/${locale}/gallery`, label: t('gallery') },
     { href: `/${locale}/contact`, label: t('contact') },
   ];

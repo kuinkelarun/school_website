@@ -24,6 +24,34 @@ export function toDateSafe(value: any): Date {
 }
 
 /**
+ * Extract a YYYY-MM-DD date string using the browser's LOCAL timezone.
+ * Use this instead of toISOString().slice(0,10) to avoid UTC-vs-local off-by-one
+ * errors for users in timezones ahead of UTC (e.g. Nepal UTC+5:45).
+ */
+export function toLocalDateString(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+/**
+ * Returns today's date as YYYY-MM-DD in Nepal Standard Time (UTC+5:45).
+ * Timezone-independent — works correctly on any server or browser timezone.
+ * Use this when storing a publishedDate so the Nepal calendar date is always correct.
+ */
+export function toNepalDateString(date?: Date): string {
+  const now = date ?? new Date();
+  // Nepal Standard Time = UTC+5:45 = 345 minutes ahead of UTC
+  const NEPAL_OFFSET_MS = (5 * 60 + 45) * 60 * 1000;
+  const nepalNow = new Date(now.getTime() + NEPAL_OFFSET_MS);
+  const y = nepalNow.getUTCFullYear();
+  const m = String(nepalNow.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(nepalNow.getUTCDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+/**
  * Format date to locale string
  */
 export function formatDate(

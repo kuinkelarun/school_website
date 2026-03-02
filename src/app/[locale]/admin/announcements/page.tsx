@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Plus, Pencil, Trash2, Eye, Star, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Plus, Pencil, Trash2, Star, ToggleLeft, ToggleRight } from 'lucide-react';
 import { useCollection, useDeleteDocument } from '@/hooks/useFirestore';
 import { updateDocument } from '@/lib/firebase/firestore';
+import { toNepalDateString } from '@/lib/utils';
 import { orderBy } from 'firebase/firestore';
 import type { Announcement } from '@/types';
-import { formatDate } from '@/lib/utils';
+import { NepaliDate } from '@/components/shared/NepaliDate';
 
 export default function AnnouncementsAdminPage() {
   const router = useRouter();
@@ -51,7 +52,7 @@ export default function AnnouncementsAdminPage() {
       await updateDocument('announcements', announcement.id, {
         isPublished: newPublished,
         ...(newPublished && !announcement.publishedDate
-          ? { publishedDate: new Date().toISOString() }
+          ? { publishedDate: toNepalDateString() }
           : {}),
       });
       refetch();
@@ -172,48 +173,19 @@ export default function AnnouncementsAdminPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <span
-                        className={`rounded-full px-2 py-1 text-xs font-semibold ${
-                          announcement.isPublished
-                            ? 'bg-success/10 text-success'
-                            : 'bg-muted text-muted-foreground'
-                        }`}
-                      >
-                        {announcement.isPublished ? t('published') : t('draft')}
-                      </span>
+                      <button onClick={() => handleTogglePublish(announcement)} className="inline-flex items-center gap-1 text-xs">
+                        {announcement.isPublished ? (
+                          <><ToggleRight className="h-5 w-5 text-emerald-500" /><span className="text-emerald-600">{t('published')}</span></>
+                        ) : (
+                          <><ToggleLeft className="h-5 w-5 text-muted-foreground" /><span className="text-muted-foreground">{t('draft')}</span></>
+                        )}
+                      </button>
                     </td>
                     <td className="px-4 py-3 text-sm text-muted-foreground">
-                      {formatDate(
-                        typeof announcement.createdAt === 'object' && 'toDate' in announcement.createdAt
-                          ? announcement.createdAt.toDate()
-                          : announcement.createdAt,
-                        'en'
-                      )}
+                      <NepaliDate date={announcement.createdAt} locale="en" format="short" showAdWhileLoading />
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end space-x-2">
-                        <button
-                          onClick={() => handleTogglePublish(announcement)}
-                          className={`rounded-lg p-2 transition-colors ${
-                            announcement.isPublished
-                              ? 'bg-success/10 text-success hover:bg-success/20'
-                              : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                          }`}
-                          title={announcement.isPublished ? 'Unpublish' : 'Publish'}
-                        >
-                          {announcement.isPublished ? (
-                            <ToggleRight className="h-4 w-4" />
-                          ) : (
-                            <ToggleLeft className="h-4 w-4" />
-                          )}
-                        </button>
-                        <button
-                          onClick={() => window.open(`/en/announcements/${announcement.slug}`, '_blank')}
-                          className="rounded-lg bg-muted p-2 transition-colors hover:bg-muted/80"
-                          title="View"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
                         <button
                           onClick={() => router.push(`/en/admin/announcements/${announcement.id}/edit`)}
                           className="rounded-lg bg-primary/10 p-2 text-primary transition-colors hover:bg-primary/20"

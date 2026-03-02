@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { ArrowLeft, Save, ImagePlus, X, Loader2 } from 'lucide-react';
 import { addDocument } from '@/lib/firebase/firestore';
+import { toNepalDateString } from '@/lib/utils';
 import { uploadFile } from '@/lib/firebase/storage';
 import slugify from 'slugify';
 import type { ArticleCategory } from '@/types';
@@ -123,7 +124,7 @@ export default function NewArticlePage() {
         isFeatured: form.isFeatured,
         isPublished: form.isPublished,
         viewCount: 0,
-        publishedDate: form.isPublished ? new Date().toISOString() : undefined,
+        publishedDate: form.isPublished ? toNepalDateString() : undefined,
       });
 
       alert(t('createSuccess'));
