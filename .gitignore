@@ -37,6 +37,12 @@ yarn-error.log*
 # vercel
 .vercel
 
+# firebase deploy artifacts (local cache, never commit)
+.firebase/
+
+# functions build output
+functions/lib/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
