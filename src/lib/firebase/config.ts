@@ -22,7 +22,7 @@ let storage: FirebaseStorage;
 if (!getApps().length) {
   app = initializeApp(firebaseConfig);
   auth = getAuth(app);
-  db = getFirestore(app);
+  db = getFirestore(app, 'janatamavi-db');
   storage = getStorage(app);
 
   // Connect to Firebase Emulators if enabled
@@ -53,7 +53,7 @@ if (!getApps().length) {
 } else {
   app = getApps()[0];
   auth = getAuth(app);
-  db = getFirestore(app);
+  db = getFirestore(app, 'janatamavi-db');
   storage = getStorage(app);
 }
 

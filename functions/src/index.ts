@@ -25,6 +25,7 @@ import * as admin from "firebase-admin";
 admin.initializeApp();
 
 const db = admin.firestore();
+db.settings({ databaseId: 'janatamavi-db' });
 const bucket = admin.storage().bucket();
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -121,7 +122,7 @@ function formatBytes(bytes: number): string {
 
 // ─── 1. Recalc on gallery / media writes ─────────────────────────────────────
 
-export const onGalleryWrite = functions.firestore
+export const onGalleryWrite = functions.region('asia-south2').firestore
   .document("gallery/{docId}")
   .onWrite(async () => {
     const totalBytes = await recalcTotalUsage();
@@ -164,7 +165,7 @@ export const onGalleryWrite = functions.firestore
     await writeUsageDoc(totalBytes, extra);
   });
 
-export const onMediaWrite = functions.firestore
+export const onMediaWrite = functions.region('asia-south2').firestore
   .document("mediaFiles/{docId}")
   .onWrite(async () => {
     const totalBytes = await recalcTotalUsage();
@@ -173,7 +174,7 @@ export const onMediaWrite = functions.firestore
 
 // ─── 2. Scheduled daily cleanup ──────────────────────────────────────────────
 
-export const scheduledStorageCleanup = functions.pubsub
+export const scheduledStorageCleanup = functions.region('asia-south2').pubsub
   .schedule("every 24 hours")
   .timeZone("Asia/Kathmandu")
   .onRun(async () => {
@@ -297,7 +298,7 @@ export const scheduledStorageCleanup = functions.pubsub
 // ─── 3. Pre-upload check (callable) ──────────────────────────────────────────
 // The client calls this before uploading a file to check if there's enough room.
 
-export const checkStorageBeforeUpload = functions.https.onCall(
+export const checkStorageBeforeUpload = functions.region('asia-south2').https.onCall(
   async (data: { fileSizeBytes: number }) => {
     const fileSizeBytes = data?.fileSizeBytes ?? 0;
     if (typeof fileSizeBytes !== "number" || fileSizeBytes <= 0) {

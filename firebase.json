@@ -7,7 +7,7 @@
       "**/node_modules/**"
     ],
     "frameworksBackend": {
-      "region": "asia-southeast1"
+      "region": "asia-south2"
     }
   },
   "functions": {
@@ -16,7 +16,8 @@
   },
   "firestore": {
     "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
+    "indexes": "firestore.indexes.json",
+    "database": "janatamavi-db"
   },
   "storage": {
     "rules": "storage.rules"
