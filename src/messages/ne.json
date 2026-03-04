@@ -221,7 +221,8 @@
       "settings": "सेटिङहरू",
       "logout": "लगआउट",
       "articles": "लेखहरू",
-      "messages": "सन्देशहरू"
+      "messages": "सन्देशहरू",
+      "adminUsers": "व्यवस्थापक प्रयोगकर्ताहरू"
     },
     "articles": {
       "title": "लेख व्यवस्थापन",

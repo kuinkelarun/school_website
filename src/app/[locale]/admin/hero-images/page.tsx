@@ -159,7 +159,7 @@ export default function HeroImagesPage() {
         saveBypassImages(updated);
         setBypassImages(updated);
       } else {
-        imageUrl = await uploadFile(selectedFile, `heroImages/${Date.now()}_${selectedFile.name}`);
+        imageUrl = await uploadFile(selectedFile, `hero-images/${Date.now()}_${selectedFile.name}`);
         await addImage({
           imageUrl,
           altText: form.altText,
@@ -191,7 +191,7 @@ export default function HeroImagesPage() {
       if (editSelectedFile) {
         imageUrl = BYPASS
           ? await fileToBase64(editSelectedFile)
-          : await uploadFile(editSelectedFile, `heroImages/${Date.now()}_${editSelectedFile.name}`);
+          : await uploadFile(editSelectedFile, `hero-images/${Date.now()}_${editSelectedFile.name}`);
       }
       if (BYPASS) {
         const updated = bypassImages.map((img) =>

@@ -220,7 +220,8 @@
       "settings": "Settings",
       "logout": "Logout",
       "articles": "Articles",
-      "messages": "Messages"
+      "messages": "Messages",
+      "adminUsers": "Admin Users"
     },
     "articles": {
       "title": "Articles Management",

@@ -44,10 +44,12 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
-    // Admin Users - Users can read their own data only
+    // Admin Users - Admins can manage all; users can read their own doc
     match /adminUsers/{userId} {
-      allow read: if isAuthenticated() && request.auth.uid == userId;
-      allow write: if true; // Allow for development/emulator testing; restrict in production
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
 
     // Site Settings - Public read, admin write
