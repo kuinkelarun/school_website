@@ -59,6 +59,12 @@ service firebase.storage {
       allow write: if isAdmin() && isImageFile() && isValidSize();
     }
 
+    // Site settings (logo, etc) - Public read, admin write
+    match /site/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && isImageFile() && isValidSize();
+    }
+
     // Gallery - Public read, admin write
     match /gallery/{fileName} {
       allow read: if true;
