@@ -22,9 +22,12 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
-admin.initializeApp();
+admin.initializeApp({
+  databaseURL: 'https://janatamavi-edu.firebaseio.com'
+});
 
 const db = admin.firestore();
+// Set the named database for all Firestore operations
 db.settings({ databaseId: 'janatamavi-db' });
 const bucket = admin.storage().bucket();
 
