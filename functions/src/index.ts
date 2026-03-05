@@ -23,7 +23,7 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
 admin.initializeApp({
-  databaseURL: 'https://janatamavi-edu.firebaseio.com'
+  storageBucket: 'janatamavi-edu.appspot.com'
 });
 
 const db = admin.firestore();
