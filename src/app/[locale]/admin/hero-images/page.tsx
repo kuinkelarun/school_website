@@ -148,7 +148,7 @@ export default function HeroImagesPage() {
           id: `bypass_${Date.now()}`,
           imageUrl,
           altText: form.altText,
-          overlayText: form.overlayText || undefined,
+          overlayText: form.overlayText,
           displayOrder: form.displayOrder,
           displayDuration: form.displayDuration,
           isActive: form.isActive,
@@ -163,7 +163,7 @@ export default function HeroImagesPage() {
         await addImage({
           imageUrl,
           altText: form.altText,
-          overlayText: form.overlayText || undefined,
+          overlayText: form.overlayText,
           displayOrder: form.displayOrder,
           displayDuration: form.displayDuration,
           isActive: form.isActive,
@@ -196,13 +196,13 @@ export default function HeroImagesPage() {
       if (BYPASS) {
         const updated = bypassImages.map((img) =>
           img.id === editingImage.id
-            ? { ...img, ...editForm, imageUrl, overlayText: editForm.overlayText || undefined, updatedAt: new Date() }
+            ? { ...img, ...editForm, imageUrl, overlayText: editForm.overlayText, updatedAt: new Date() }
             : img
         ).sort((a, b) => a.displayOrder - b.displayOrder);
         saveBypassImages(updated);
         setBypassImages(updated);
       } else {
-        await updateImage(editingImage.id, { ...editForm, imageUrl, overlayText: editForm.overlayText || undefined, updatedAt: new Date() });
+        await updateImage(editingImage.id, { ...editForm, imageUrl, overlayText: editForm.overlayText, updatedAt: new Date() });
         refetch();
       }
       closeEdit();

@@ -415,19 +415,7 @@ export default function AdminUsersPage() {
         </div>
       )}
 
-      {/* Info note */}
-      <div className="rounded-lg border bg-muted/40 p-4 text-sm text-muted-foreground">
-        <strong>Note:</strong> Deleting a user here only removes their admin access. Their Firebase Authentication account remains.
-        To fully delete a user from Firebase Auth, use the{' '}
-        <a
-          href={`https://console.firebase.google.com/project/${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}/authentication/users`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-primary underline"
-        >
-          Firebase Console
-        </a>.
-      </div>
+
     </div>
   );
 }
