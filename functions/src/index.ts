@@ -20,6 +20,7 @@
  */
 
 import * as functions from "firebase-functions";
+import { onDocumentWritten } from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 
 admin.initializeApp({
@@ -125,9 +126,9 @@ function formatBytes(bytes: number): string {
 
 // ─── 1. Recalc on gallery / media writes ─────────────────────────────────────
 
-export const onGalleryWrite = functions.firestore
-  .document("gallery/{docId}")
-  .onWrite(async () => {
+export const onGalleryWrite = onDocumentWritten(
+  { document: "gallery/{docId}", database: "janatamavi-db" },
+  async () => {
     const totalBytes = await recalcTotalUsage();
     const usage = await getUsageDoc();
     const pct = totalBytes / usage.limitBytes;
@@ -166,14 +167,16 @@ export const onGalleryWrite = functions.firestore
     }
 
     await writeUsageDoc(totalBytes, extra);
-  });
+  }
+);
 
-export const onMediaWrite = functions.firestore
-  .document("mediaFiles/{docId}")
-  .onWrite(async () => {
+export const onMediaWrite = onDocumentWritten(
+  { document: "mediaFiles/{docId}", database: "janatamavi-db" },
+  async () => {
     const totalBytes = await recalcTotalUsage();
     await writeUsageDoc(totalBytes);
-  });
+  }
+);
 
 // ─── 2. Scheduled daily cleanup ──────────────────────────────────────────────
 
