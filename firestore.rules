@@ -37,6 +37,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Articles - Published content is public, admin can see all
+    match /articles/{document} {
+      allow read: if resource.data.isPublished == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
     // Contact Messages - Anyone can create, only admin can read/update
     match /contactMessages/{document} {
       allow read: if isAdmin();
