@@ -50,6 +50,12 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    // Article Submissions - Anyone can submit, only admin can read/manage
+    match /articleSubmissions/{document} {
+      allow read, update, delete: if isAdmin();
+      allow create: if true; // Anyone can submit an article
+    }
+
     // Admin Users - Admins can manage all; users can read their own doc
     match /adminUsers/{userId} {
       allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
