@@ -119,8 +119,11 @@ export async function addDocument<T = DocumentData>(
 ): Promise<string> {
   if (BYPASS) return bpAdd(collectionName, data);
   try {
+    const cleaned = Object.fromEntries(
+      Object.entries({ ...data } as Record<string, unknown>).filter(([, v]) => v !== undefined)
+    );
     const docData = {
-      ...data,
+      ...cleaned,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     };
@@ -144,8 +147,11 @@ export async function updateDocument<T = Partial<DocumentData>>(
   if (BYPASS) { bpUpdate(collectionName, docId, data); return; }
   try {
     const docRef = doc(db, collectionName, docId);
+    const cleaned = Object.fromEntries(
+      Object.entries(data as Record<string, unknown>).filter(([, v]) => v !== undefined)
+    );
     await updateDoc(docRef, {
-      ...data,
+      ...cleaned,
       updatedAt: serverTimestamp(),
     });
   } catch (error) {

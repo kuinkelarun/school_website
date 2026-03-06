@@ -172,7 +172,7 @@ export default function AdminGalleryPage() {
           type: q.type,
           url,
           title: q.title || q.file.name,
-          description: q.description || undefined,
+          ...(q.description ? { description: q.description } : {}),
           mimeType: q.file.type,
           fileSize: q.file.size,
           fileName: q.file.name,
