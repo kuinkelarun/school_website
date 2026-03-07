@@ -40,7 +40,10 @@ service cloud.firestore {
     // Articles - Published content is public, admin can see all
     match /articles/{document} {
       allow read: if resource.data.isPublished == true || isAdmin();
-      allow write: if isAdmin();
+      allow create, delete: if isAdmin();
+      // Admins can update anything; public can only increment viewCount
+      allow update: if isAdmin() ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewCount', 'updatedAt']);
     }
 
     // Contact Messages - Anyone can create, only admin can read/update

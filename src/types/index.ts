@@ -147,6 +147,19 @@ export interface AdminUser extends BaseDocument {
 // Site Settings
 // ============================================================================
 
+export interface NavTranslations {
+  home?: string;
+  about?: string;
+  announcements?: string;
+  articles?: string;
+  events?: string;
+  programs?: string;
+  gallery?: string;
+  contact?: string;
+  faculty?: string;
+  quickLinks?: string;
+}
+
 export interface SiteSettings {
   id: string;
   schoolName: string;
@@ -166,6 +179,7 @@ export interface SiteSettings {
   aboutContentNe: string;
   missionVision: string;
   missionVisionNe: string;
+  navTranslations?: NavTranslations;
 }
 
 export interface SocialMedia {
