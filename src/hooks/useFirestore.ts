@@ -215,6 +215,14 @@ export function useQueryDocuments<T>(
     let mounted = true;
 
     const fetchDocuments = async () => {
+      // Skip query when no filters provided (caller not ready)
+      if (filtersRef.current.length === 0) {
+        if (mounted) {
+          setData([]);
+          setLoading(false);
+        }
+        return;
+      }
       try {
         if (!mounted) return;
         setLoading(true);
@@ -242,6 +250,7 @@ export function useQueryDocuments<T>(
   }, [collectionName, filtersStr, orderByField, orderDirection, limitCount]);
 
   const refetch = useCallback(async () => {
+    if (filtersRef.current.length === 0) return;
     try {
       setLoading(true);
       setError(null);
