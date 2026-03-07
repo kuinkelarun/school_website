@@ -2,11 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import {
-  LayoutDashboard,
-  FolderOpen,
   LogOut,
   Menu,
   X,
@@ -16,16 +13,10 @@ import { useFacultyAuth } from '@/hooks/useFacultyAuth';
 import { cn } from '@/lib/utils';
 
 export function FacultySidebar() {
-  const pathname = usePathname();
   const locale = useLocale();
   const t = useTranslations('faculty.nav');
   const { signOut, facultyUser } = useFacultyAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const navItems = [
-    { href: `/${locale}/faculty/dashboard`, icon: LayoutDashboard, label: t('dashboard') },
-    { href: `/${locale}/faculty/folders`, icon: FolderOpen, label: t('myDocuments') },
-  ];
 
   const handleSignOut = async () => {
     try {
@@ -39,7 +30,7 @@ export function FacultySidebar() {
     <div className="flex h-full flex-col">
       {/* Logo */}
       <div className="border-b p-6">
-        <Link href={`/${locale}/faculty/dashboard`} className="flex items-center space-x-2">
+        <Link href={`/${locale}/faculty/folders`} className="flex items-center space-x-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
             <GraduationCap className="h-5 w-5" />
           </div>
@@ -50,28 +41,8 @@ export function FacultySidebar() {
         </Link>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 space-y-1 p-4">
-        {navItems.map((item) => {
-          const isActive = pathname.startsWith(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className={cn(
-                'flex items-center space-x-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-primary text-primary-foreground'
-                  : 'hover:bg-muted'
-              )}
-            >
-              <item.icon className="h-5 w-5" />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
+      {/* Spacer */}
+      <div className="flex-1" />
 
       {/* User Section */}
       <div className="border-t p-4">
