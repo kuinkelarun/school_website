@@ -1,0 +1,12 @@
+[
+  {
+    "origin": [
+      "https://janatamavi-edu.web.app",
+      "https://janatamavi-edu.firebaseapp.com",
+      "http://localhost:3000"
+    ],
+    "method": ["GET", "HEAD"],
+    "maxAgeSeconds": 3600,
+    "responseHeader": ["Content-Type", "Content-Length", "Content-Disposition"]
+  }
+]

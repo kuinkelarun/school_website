@@ -362,3 +362,35 @@ export interface ArticleSubmission extends BaseDocument {
   reviewedAt?: Timestamp | Date;
   reviewedBy?: string;
 }
+
+// ============================================================================
+// Faculty Portal
+// ============================================================================
+
+export interface FacultyUser extends BaseDocument {
+  email: string;
+  fullName: string;
+  facultyMemberId: string; // reference to faculty collection doc id
+  isApproved: boolean;
+  isActive: boolean;
+  storageUsed: number; // bytes
+  lastLogin?: Timestamp | Date;
+}
+
+export interface FacultyFolder extends BaseDocument {
+  name: string;
+  description?: string;
+  ownerId: string; // faculty user uid
+  parentFolderId: string | null;
+}
+
+export interface FacultyFile extends BaseDocument {
+  name: string;
+  folderId: string;
+  ownerId: string; // faculty user uid
+  fileUrl: string; // Firebase Storage download URL
+  storagePath: string; // Firebase Storage path for deletion
+  fileSize: number; // bytes
+  mimeType: string;
+  originalFileName: string;
+}

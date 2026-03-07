@@ -13,6 +13,13 @@ service cloud.firestore {
              get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.isActive == true;
     }
 
+    function isFacultyUser() {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/facultyUsers/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/facultyUsers/$(request.auth.uid)).data.isApproved == true &&
+             get(/databases/$(database)/documents/facultyUsers/$(request.auth.uid)).data.isActive == true;
+    }
+
     // Hero Images - Public read, admin write
     match /heroImages/{document} {
       allow read: if true;
@@ -73,9 +80,9 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Faculty - Published content is public, admin can manage
+    // Faculty - Published content is public, authenticated users can read (for registration email check), admin can manage
     match /faculty/{document} {
-      allow read: if resource.data.isPublished == true || isAdmin();
+      allow read: if resource.data.isPublished == true || isAuthenticated() || isAdmin();
       allow write: if isAdmin();
     }
 
@@ -95,6 +102,34 @@ service cloud.firestore {
     match /mail/{document} {
       allow create: if true;
       allow read, update, delete: if isAdmin();
+    }
+
+    // Faculty Users - Self-create on registration, admin manages approval
+    match /facultyUsers/{userId} {
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow update: if isAdmin() ||
+        (isAuthenticated() && request.auth.uid == userId &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['storageUsed', 'lastLogin', 'updatedAt']));
+      allow delete: if isAdmin();
+    }
+
+    // Faculty Folders - Owner read/write, admin read
+    match /facultyFolders/{folderId} {
+      allow create: if isFacultyUser() && request.resource.data.ownerId == request.auth.uid;
+      allow read: if isAdmin() ||
+        (isFacultyUser() && resource.data.ownerId == request.auth.uid);
+      allow update, delete: if isAdmin() ||
+        (isFacultyUser() && resource.data.ownerId == request.auth.uid);
+    }
+
+    // Faculty Files - Owner read/write, admin read
+    match /facultyFiles/{fileId} {
+      allow create: if isFacultyUser() && request.resource.data.ownerId == request.auth.uid;
+      allow read: if isAdmin() ||
+        (isFacultyUser() && resource.data.ownerId == request.auth.uid);
+      allow update, delete: if isAdmin() ||
+        (isFacultyUser() && resource.data.ownerId == request.auth.uid);
     }
   }
 }

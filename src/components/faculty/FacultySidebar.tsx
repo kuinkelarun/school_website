@@ -3,50 +3,28 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import {
   LayoutDashboard,
-  Image,
-  Megaphone,
-  Calendar,
-  GraduationCap,
   FolderOpen,
-  Settings,
   LogOut,
   Menu,
   X,
-  Info,
-  Images,
-  Users,
-  Newspaper,
-  Mail,
-  ShieldCheck,
-  UserCheck,
+  GraduationCap,
 } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useFacultyAuth } from '@/hooks/useFacultyAuth';
 import { cn } from '@/lib/utils';
 
-export function AdminSidebar() {
+export function FacultySidebar() {
   const pathname = usePathname();
-  const t = useTranslations('admin.nav');
-  const { signOut, adminUser } = useAuth();
+  const locale = useLocale();
+  const t = useTranslations('faculty.nav');
+  const { signOut, facultyUser } = useFacultyAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { href: '/en/admin/dashboard', icon: LayoutDashboard, label: t('dashboard') },
-    { href: '/en/admin/hero-images', icon: Image, label: t('heroImages') },
-    { href: '/en/admin/announcements', icon: Megaphone, label: t('announcements') },
-    { href: '/en/admin/articles', icon: Newspaper, label: t('articles') },
-    { href: '/en/admin/events', icon: Calendar, label: t('events') },
-    { href: '/en/admin/programs', icon: GraduationCap, label: t('programs') },
-    { href: '/en/admin/faculty', icon: Users, label: t('faculty') },
-    { href: '/en/admin/media', icon: FolderOpen, label: t('media') },
-    { href: '/en/admin/gallery', icon: Images, label: t('gallery') },
-    { href: '/en/admin/about', icon: Info, label: t('about') },
-    { href: '/en/admin/messages', icon: Mail, label: t('messages') },
-    { href: '/en/admin/admin-users', icon: ShieldCheck, label: t('adminUsers') },
-    { href: '/en/admin/faculty-accounts', icon: UserCheck, label: t('facultyAccounts') },
-    { href: '/en/admin/site-settings', icon: Settings, label: t('siteSettings') },
+    { href: `/${locale}/faculty/dashboard`, icon: LayoutDashboard, label: t('dashboard') },
+    { href: `/${locale}/faculty/folders`, icon: FolderOpen, label: t('myDocuments') },
   ];
 
   const handleSignOut = async () => {
@@ -61,13 +39,13 @@ export function AdminSidebar() {
     <div className="flex h-full flex-col">
       {/* Logo */}
       <div className="border-b p-6">
-        <Link href="/en/admin/dashboard" className="flex items-center space-x-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <span className="text-xl font-bold">A</span>
+        <Link href={`/${locale}/faculty/dashboard`} className="flex items-center space-x-2">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+            <GraduationCap className="h-5 w-5" />
           </div>
           <div>
-            <p className="font-heading text-lg font-bold">Admin Panel</p>
-            <p className="text-xs text-muted-foreground">School Website</p>
+            <p className="font-heading text-lg font-bold">{t('portalTitle')}</p>
+            <p className="text-xs text-muted-foreground">{t('portalSubtitle')}</p>
           </div>
         </Link>
       </div>
@@ -75,7 +53,7 @@ export function AdminSidebar() {
       {/* Navigation */}
       <nav className="flex-1 space-y-1 p-4">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
@@ -97,15 +75,10 @@ export function AdminSidebar() {
 
       {/* User Section */}
       <div className="border-t p-4">
-        {adminUser && (
+        {facultyUser && (
           <div className="mb-3 rounded-lg bg-muted p-3">
-            <p className="text-sm font-medium">{adminUser.fullName}</p>
-            <p className="text-xs text-muted-foreground">{adminUser.email}</p>
-            <p className="mt-1 text-xs">
-              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-primary">
-                {adminUser.role.replace('_', ' ')}
-              </span>
-            </p>
+            <p className="text-sm font-medium">{facultyUser.fullName}</p>
+            <p className="text-xs text-muted-foreground">{facultyUser.email}</p>
           </div>
         )}
         <button

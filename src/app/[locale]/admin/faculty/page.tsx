@@ -18,9 +18,10 @@ import {
   addDocument,
   updateDocument,
   deleteDocument,
+  queryDocuments,
 } from '@/lib/firebase/firestore';
 import { uploadFile } from '@/lib/firebase/storage';
-import type { FacultyMember, FacultyCategory, FacultyMemberType } from '@/types';
+import type { FacultyMember, FacultyCategory, FacultyMemberType, FacultyUser } from '@/types';
 
 // ─── Bypass mode helpers ───────────────────────────────────────────────────
 const BYPASS = process.env.NEXT_PUBLIC_BYPASS_AUTH === 'true';
@@ -200,6 +201,17 @@ export default function FacultyPage() {
   const handleDelete = async (id: string) => {
     setDeleting(true);
     try {
+      // Find the faculty member's email to deactivate their portal account
+      const member = allMembers.find((m) => m.id === id);
+      if (member?.email) {
+        const portalUsers = await queryDocuments<FacultyUser>('facultyUsers', [
+          { field: 'email', operator: '==', value: member.email },
+        ]);
+        for (const pu of portalUsers) {
+          await updateDocument('facultyUsers', pu.id, { isActive: false });
+        }
+      }
+
       await deleteDocument('faculty', id);
       showStatus(t('deleteSuccess'));
       refetch();

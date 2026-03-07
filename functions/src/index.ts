@@ -332,3 +332,102 @@ export const checkStorageBeforeUpload = functions.https.onCall(
     };
   }
 );
+
+// ─── 4. Delete Faculty Member (callable by admins) ───────────────────────────
+// Cascade-deletes all data associated with a faculty portal user:
+//   Auth account → facultyUsers doc → facultyFolders → facultyFiles → Storage files
+
+export const deleteFacultyMember = functions.https.onCall(
+  async (data: { userId: string }, context) => {
+    // Verify the caller is an admin
+    if (!context.auth) {
+      throw new functions.https.HttpsError(
+        "unauthenticated",
+        "You must be logged in."
+      );
+    }
+
+    const callerUid = context.auth.uid;
+    const adminDoc = await db.collection("adminUsers").doc(callerUid).get();
+    if (!adminDoc.exists || adminDoc.data()?.isActive !== true) {
+      throw new functions.https.HttpsError(
+        "permission-denied",
+        "Only active admins can delete faculty members."
+      );
+    }
+
+    const userId = data?.userId;
+    if (!userId || typeof userId !== "string") {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "userId is required."
+      );
+    }
+
+    const deletedCounts = { files: 0, folders: 0, storageFiles: 0 };
+
+    try {
+      // 1. Delete all storage files for this user
+      try {
+        const [storageFiles] = await bucket.getFiles({
+          prefix: `faculty-files/${userId}/`,
+        });
+        for (const file of storageFiles) {
+          await file.delete().catch(() => {});
+          deletedCounts.storageFiles++;
+        }
+      } catch (err) {
+        functions.logger.warn(`Error deleting storage files for ${userId}:`, err);
+      }
+
+      // 2. Delete all facultyFiles documents
+      const filesSnap = await db
+        .collection("facultyFiles")
+        .where("ownerId", "==", userId)
+        .get();
+      for (const doc of filesSnap.docs) {
+        await doc.ref.delete();
+        deletedCounts.files++;
+      }
+
+      // 3. Delete all facultyFolders documents
+      const foldersSnap = await db
+        .collection("facultyFolders")
+        .where("ownerId", "==", userId)
+        .get();
+      for (const doc of foldersSnap.docs) {
+        await doc.ref.delete();
+        deletedCounts.folders++;
+      }
+
+      // 4. Delete the facultyUsers document
+      await db.collection("facultyUsers").doc(userId).delete();
+
+      // 5. Delete the Firebase Auth user
+      try {
+        await admin.auth().deleteUser(userId);
+      } catch (err: any) {
+        // User may not exist in Auth (e.g. already deleted)
+        if (err.code !== "auth/user-not-found") {
+          functions.logger.warn(`Error deleting auth user ${userId}:`, err);
+        }
+      }
+
+      functions.logger.info(
+        `Faculty member ${userId} deleted: ${deletedCounts.files} files, ` +
+        `${deletedCounts.folders} folders, ${deletedCounts.storageFiles} storage files`
+      );
+
+      return {
+        success: true,
+        deleted: deletedCounts,
+      };
+    } catch (err) {
+      functions.logger.error(`Error deleting faculty member ${userId}:`, err);
+      throw new functions.https.HttpsError(
+        "internal",
+        "Failed to delete faculty member. Some data may have been partially deleted."
+      );
+    }
+  }
+);

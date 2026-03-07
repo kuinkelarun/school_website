@@ -70,5 +70,13 @@ service firebase.storage {
       allow read: if true;
       allow write: if isAdmin() && isValidSize();
     }
+
+    // Faculty files - Owner read/write (3MB per file), admin read
+    match /faculty-files/{userId}/{allPaths=**} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow write: if isAuthenticated() && request.auth.uid == userId
+                   && request.resource.size < 3 * 1024 * 1024;
+      allow delete: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+    }
   }
 }
