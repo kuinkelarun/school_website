@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,6 +18,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
+  const locale = useLocale();
   const { signIn, isAuthenticated, loading: authLoading } = useAuth();
   const [rememberMe, setRememberMe] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -32,16 +34,16 @@ export default function LoginPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
-      router.push('/en/admin/dashboard');
+      router.push(`/${locale}/admin/dashboard`);
     }
-  }, [isAuthenticated, authLoading, router]);
+  }, [isAuthenticated, authLoading, router, locale]);
 
   const onSubmit = async (data: LoginFormValues) => {
     setLoginError(null);
 
     try {
       await signIn(data.email, data.password, rememberMe);
-      router.push('/en/admin/dashboard');
+      router.push(`/${locale}/admin/dashboard`);
     } catch (error: any) {
       console.error('Login error:', error);
 
@@ -61,14 +63,6 @@ export default function LoginPage() {
       }
     }
   };
-
-  if (authLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
-    );
-  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/50 px-4 py-12">
@@ -157,7 +151,7 @@ export default function LoginPage() {
           {/* Footer */}
           <div className="mt-6 text-center">
             <button
-              onClick={() => router.push('/en')}
+              onClick={() => router.push(`/${locale}`)}
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               ← Back to website

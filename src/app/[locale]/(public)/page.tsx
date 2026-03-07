@@ -9,7 +9,6 @@ import { AnnouncementCard } from '@/components/public/AnnouncementCard';
 import { ArticleCard } from '@/components/public/ArticleCard';
 import { QuickLinks } from '@/components/public/QuickLinks';
 import { NepaliDate } from '@/components/shared/NepaliDate';
-import { NepaliCalendarWidget } from '@/components/public/NepaliCalendarWidget';
 import { useQueryDocuments } from '@/hooks/useFirestore';
 import type { Announcement, Article, Event } from '@/types';
 
@@ -70,12 +69,7 @@ export default function HomePage() {
           <div className="mb-8 text-center">
             <h2 className="mb-2 text-3xl font-bold">{t('quickLinks')}</h2>
           </div>
-          <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
-            <QuickLinks />
-            <aside className="hidden lg:block">
-              <NepaliCalendarWidget locale={locale} />
-            </aside>
-          </div>
+          <QuickLinks />
         </div>
       </section>
 

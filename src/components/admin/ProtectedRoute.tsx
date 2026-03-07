@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 
 interface ProtectedRouteProps {
@@ -10,15 +11,16 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter();
+  const locale = useLocale();
   const { isAuthenticated, isAdmin, loading } = useAuth();
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
-      router.push('/login');
+      router.push(`/${locale}/login`);
     } else if (!loading && isAuthenticated && !isAdmin) {
-      router.push('/login');
+      router.push(`/${locale}/login`);
     }
-  }, [isAuthenticated, isAdmin, loading, router]);
+  }, [isAuthenticated, isAdmin, loading, router, locale]);
 
   if (loading) {
     return (
