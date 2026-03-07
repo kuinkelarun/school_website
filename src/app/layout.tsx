@@ -3,7 +3,7 @@ import { getLocale } from 'next-intl/server';
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "School Website - Welcome",
+  title: "Janata Sec. School",
   description: "Quality education for a brighter future",
 };
 
