@@ -20,7 +20,7 @@
     "home": "Home",
     "about": "About",
     "announcements": "Announcements",
-    "programs": "Programs",
+    "programs": "Faculty",
     "events": "Events",
     "gallery": "Gallery",
     "contact": "Contact",
@@ -36,7 +36,7 @@
     "aboutUs": "About Us",
     "quickLinks": "Quick Links",
     "nepaliCalendar": "Nepali Calendar",
-    "latestArticles": "Latest Articles"
+    "latestArticles": "Articles"
   },
   "articles": {
     "title": "School Articles",
@@ -534,19 +534,7 @@
       "save": "Save Settings",
       "saving": "Saving...",
       "saveSuccess": "Site settings saved successfully.",
-      "saveError": "Failed to save settings. Please try again.",
-      "navLabelsSection": "Navigation Labels (Nepali)",
-      "navLabelsHint": "Override the Nepali translation for each navigation item and section title. Leave blank to use the default translation.",
-      "navLabel_home": "Home",
-      "navLabel_about": "About",
-      "navLabel_announcements": "Announcements",
-      "navLabel_articles": "Articles",
-      "navLabel_events": "Events",
-      "navLabel_programs": "Programs",
-      "navLabel_gallery": "Gallery",
-      "navLabel_contact": "Contact",
-      "navLabel_faculty": "Faculty & Staff",
-      "navLabel_quickLinks": "Quick Links"
+      "saveError": "Failed to save settings. Please try again."
     }
   }
 }

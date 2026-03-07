@@ -28,17 +28,13 @@ export function Footer() {
 
   const currentYear = new Date().getFullYear();
 
-  // Helper: use navTranslations override when in Nepali, else fall back to i18n
-  const navLabel = (key: keyof import('@/types').NavTranslations, fallback: string) =>
-    locale === 'ne' && settings?.navTranslations?.[key] ? settings.navTranslations[key]! : fallback;
-
   const quickLinks = [
-    { href: `/${locale}`, label: navLabel('home', tNav('home')) },
-    { href: `/${locale}/about`, label: navLabel('about', tNav('about')) },
-    { href: `/${locale}/announcements`, label: navLabel('announcements', tNav('announcements')) },
-    { href: `/${locale}/programs`, label: navLabel('programs', tNav('programs')) },
-    { href: `/${locale}/events`, label: navLabel('events', tNav('events')) },
-    { href: `/${locale}/contact`, label: navLabel('contact', tNav('contact')) },
+    { href: `/${locale}`, label: tNav('home') },
+    { href: `/${locale}/about`, label: tNav('about') },
+    { href: `/${locale}/announcements`, label: tNav('announcements') },
+    { href: `/${locale}/programs`, label: tNav('programs') },
+    { href: `/${locale}/events`, label: tNav('events') },
+    { href: `/${locale}/contact`, label: tNav('contact') },
   ];
 
   const socialLinks = [
