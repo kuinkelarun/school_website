@@ -69,18 +69,6 @@ export default function SiteSettingsPage() {
   const [officeHours, setOfficeHours] = useState('');
   const [officeHoursNe, setOfficeHoursNe] = useState('');
 
-  // Navigation label translations (Nepali overrides)
-  const [navHome, setNavHome] = useState('');
-  const [navAbout, setNavAbout] = useState('');
-  const [navAnnouncements, setNavAnnouncements] = useState('');
-  const [navArticles, setNavArticles] = useState('');
-  const [navEvents, setNavEvents] = useState('');
-  const [navPrograms, setNavPrograms] = useState('');
-  const [navGallery, setNavGallery] = useState('');
-  const [navContact, setNavContact] = useState('');
-  const [navFaculty, setNavFaculty] = useState('');
-  const [navQuickLinks, setNavQuickLinks] = useState('');
-
   // Logo upload state
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -113,16 +101,6 @@ export default function SiteSettingsPage() {
       setMapEmbedUrl(settings.mapEmbedUrl || '');
       setOfficeHours(settings.officeHours || '');
       setOfficeHoursNe(settings.officeHoursNe || '');
-      setNavHome(settings.navTranslations?.home || '');
-      setNavAbout(settings.navTranslations?.about || '');
-      setNavAnnouncements(settings.navTranslations?.announcements || '');
-      setNavArticles(settings.navTranslations?.articles || '');
-      setNavEvents(settings.navTranslations?.events || '');
-      setNavPrograms(settings.navTranslations?.programs || '');
-      setNavGallery(settings.navTranslations?.gallery || '');
-      setNavContact(settings.navTranslations?.contact || '');
-      setNavFaculty(settings.navTranslations?.faculty || '');
-      setNavQuickLinks(settings.navTranslations?.quickLinks || '');
     }
   }, [settings]);
 
@@ -193,18 +171,6 @@ export default function SiteSettingsPage() {
           ...(socialYoutube ? { youtube: socialYoutube } : {}),
         },
         mapEmbedUrl: mapEmbedUrl || '',
-        navTranslations: {
-          ...(navHome ? { home: navHome } : {}),
-          ...(navAbout ? { about: navAbout } : {}),
-          ...(navAnnouncements ? { announcements: navAnnouncements } : {}),
-          ...(navArticles ? { articles: navArticles } : {}),
-          ...(navEvents ? { events: navEvents } : {}),
-          ...(navPrograms ? { programs: navPrograms } : {}),
-          ...(navGallery ? { gallery: navGallery } : {}),
-          ...(navContact ? { contact: navContact } : {}),
-          ...(navFaculty ? { faculty: navFaculty } : {}),
-          ...(navQuickLinks ? { quickLinks: navQuickLinks } : {}),
-        },
       };
 
       await setDocument('siteSettings', 'main', merged);
@@ -502,39 +468,6 @@ export default function SiteSettingsPage() {
             <iframe src={mapEmbedUrl} width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy" />
           </div>
         )}
-      </div>
-
-      {/* Navigation Labels (Nepali) */}
-      <div className="rounded-lg border bg-card p-6">
-        <h2 className="mb-1 text-xl font-semibold">{t('navLabelsSection')}</h2>
-        <p className="mb-4 text-sm text-muted-foreground">{t('navLabelsHint')}</p>
-        <div className="grid gap-4 md:grid-cols-2">
-          {([
-            { key: 'home', value: navHome, setter: setNavHome, placeholder: 'गृहपृष्ठ' },
-            { key: 'about', value: navAbout, setter: setNavAbout, placeholder: 'हाम्रोबारे' },
-            { key: 'announcements', value: navAnnouncements, setter: setNavAnnouncements, placeholder: 'सूचनाहरू' },
-            { key: 'articles', value: navArticles, setter: setNavArticles, placeholder: 'लेखहरू' },
-            { key: 'events', value: navEvents, setter: setNavEvents, placeholder: 'कार्यक्रमहरू' },
-            { key: 'programs', value: navPrograms, setter: setNavPrograms, placeholder: 'कार्यक्रमहरू' },
-            { key: 'gallery', value: navGallery, setter: setNavGallery, placeholder: 'ग्यालेरी' },
-            { key: 'contact', value: navContact, setter: setNavContact, placeholder: 'सम्पर्क' },
-            { key: 'faculty', value: navFaculty, setter: setNavFaculty, placeholder: 'शिक्षक तथा कर्मचारी' },
-            { key: 'quickLinks', value: navQuickLinks, setter: setNavQuickLinks, placeholder: 'द्रुत लिंकहरू' },
-          ] as { key: string; value: string; setter: (v: string) => void; placeholder: string }[]).map(({ key, value, setter, placeholder }) => (
-            <div key={key}>
-              <label className="mb-2 block text-sm font-medium">
-                {t(`navLabel_${key}`)}
-              </label>
-              <input
-                type="text"
-                value={value}
-                onChange={(e) => setter(e.target.value)}
-                className="w-full rounded-lg border bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder={placeholder}
-              />
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );

@@ -23,19 +23,15 @@ export function Header() {
     : '';
   const logoUrl = settings?.logoUrl || '';
 
-  // Helper: use navTranslations override when in Nepali, else fall back to i18n
-  const navLabel = (key: keyof import('@/types').NavTranslations, fallback: string) =>
-    locale === 'ne' && settings?.navTranslations?.[key] ? settings.navTranslations[key]! : fallback;
-
   const navLinks = [
-    { href: `/${locale}`, label: navLabel('home', t('home')) },
-    { href: `/${locale}/about`, label: navLabel('about', t('about')) },
-    { href: `/${locale}/announcements`, label: navLabel('announcements', t('announcements')) },
-    { href: `/${locale}/events`, label: navLabel('events', t('events')) },
-    { href: `/${locale}/articles`, label: navLabel('articles', t('articles')) },
-    { href: `/${locale}/programs`, label: navLabel('programs', t('programs')) },
-    { href: `/${locale}/gallery`, label: navLabel('gallery', t('gallery')) },
-    { href: `/${locale}/contact`, label: navLabel('contact', t('contact')) },
+    { href: `/${locale}`, label: t('home') },
+    { href: `/${locale}/about`, label: t('about') },
+    { href: `/${locale}/announcements`, label: t('announcements') },
+    { href: `/${locale}/events`, label: t('events') },
+    { href: `/${locale}/articles`, label: t('articles') },
+    { href: `/${locale}/programs`, label: t('programs') },
+    { href: `/${locale}/gallery`, label: t('gallery') },
+    { href: `/${locale}/contact`, label: t('contact') },
   ];
 
   return (

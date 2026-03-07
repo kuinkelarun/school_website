@@ -20,8 +20,8 @@
     "home": "गृहपृष्ठ",
     "about": "हाम्रो बारेमा",
     "announcements": "सूचनाहरू",
-    "programs": "कार्यक्रमहरू",
-    "events": "घटनाहरू",
+    "programs": "संकाय",
+    "events": "कार्यक्रमहरु",
     "gallery": "ग्यालरी",
     "contact": "सम्पर्क",
     "admissions": "भर्ना",
@@ -30,13 +30,13 @@
   },
   "home": {
     "title": "हाम्रो विद्यालयमा स्वागत छ",
-    "latestAnnouncements": "नवीनतम सूचनाहरू",
-    "upcomingEvents": "आगामी घटनाहरू",
+    "latestAnnouncements": "ताजा सूचनाहरु",
+    "upcomingEvents": "आगामी कार्यक्रमहरु",
     "ourPrograms": "हाम्रा कार्यक्रमहरू",
     "aboutUs": "हाम्रो बारेमा",
     "quickLinks": "द्रुत लिङ्कहरू",
     "nepaliCalendar": "नेपाली पात्रो",
-    "latestArticles": "नवीनतम लेखहरू"
+    "latestArticles": "लेखहरू"
   },
   "articles": {
     "title": "विद्यालय लेखहरू",
@@ -534,19 +534,7 @@
       "mapEmbedHint": "गूगल म्याप्स जानुहोस् र सेयर गर्नुहोस् त्यसबै iframe कोडबाट src URL प्रतिलिपि गर्नुहोस्।",      "save": "सेटिङहरू बचत गर्नुहोस्",
       "saving": "बचत गर्दै...",
       "saveSuccess": "साइट सेटिङहरू सफलतापूर्वक बचत गरियो।",
-      "saveError": "सेटिङहरू बचत गर्न असफल। कृपया पुन: प्रयास गर्नुहोस्।",
-      "navLabelsSection": "नेभिगेसन लेबलहरू (नेपाली)",
-      "navLabelsHint": "प्रत्येक नेभिगेसन आइटम र शीर्षकको नेपाली अनुवाद परिवर्तन गर्नुहोस्। खाली छोड्दा पूर्वनिर्धारित अनुवाद प्रयोग हुनेछ।",
-      "navLabel_home": "गृहपृष्ठ",
-      "navLabel_about": "हाम्रोबारे",
-      "navLabel_announcements": "सूचनाहरू",
-      "navLabel_articles": "लेखहरू",
-      "navLabel_events": "कार्यक्रमहरू",
-      "navLabel_programs": "कार्यक्रमहरू",
-      "navLabel_gallery": "ग्यालेरी",
-      "navLabel_contact": "सम्पर्क",
-      "navLabel_faculty": "शिक्षक तथा कर्मचारी",
-      "navLabel_quickLinks": "द्रुत लिंकहरू"
+      "saveError": "सेटिङहरू बचत गर्न असफल। कृपया पुन: प्रयास गर्नुहोस्।"
     }
   }
 }
