@@ -47,7 +47,7 @@ export default function FacultyLoginPage() {
 
   useEffect(() => {
     if (!authLoading && isAuthenticated && isApproved) {
-      router.push(`/${locale}/faculty/dashboard`);
+      router.push(`/${locale}/faculty/folders`);
     }
   }, [isAuthenticated, isApproved, authLoading, router, locale]);
 
@@ -55,7 +55,7 @@ export default function FacultyLoginPage() {
     setFormError(null);
     try {
       await signIn(data.email, data.password);
-      router.push(`/${locale}/faculty/dashboard`);
+      router.push(`/${locale}/faculty/folders`);
     } catch (error: any) {
       if (error.message?.includes('pending')) {
         setFormError(t('pendingApproval'));

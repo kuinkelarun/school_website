@@ -647,7 +647,9 @@
       "subfolders": "Sub-folders",
       "files": "files",
       "confirmDeleteTitle": "Delete Folder",
-      "confirmDeleteMessage": "This will permanently delete the folder and all its files. This action cannot be undone."
+      "confirmDeleteMessage": "This will permanently delete the folder and all its files. This action cannot be undone.",
+      "deleteConfirmTitle": "Delete Folder",
+      "deleteConfirmMessage": "This will permanently delete the folder and all its files. This action cannot be undone."
     },
     "files": {
       "files": "Files",
