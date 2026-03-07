@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { X, Download, AlertCircle } from 'lucide-react';
 import type { FacultyFile } from '@/types';
-import { getFileBlob, getFileDownloadURL } from '@/lib/firebase/storage';
+import { getFileBlob } from '@/lib/firebase/storage';
 
 interface FileViewerProps {
   file: FacultyFile;
@@ -14,26 +14,25 @@ interface FileViewerProps {
 export default function FileViewer({ file, onClose, onDownload }: FileViewerProps) {
   const [textContent, setTextContent] = useState<string | null>(null);
   const [wordHtml, setWordHtml] = useState<string | null>(null);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let blobUrl: string | null = null;
     const loadContent = async () => {
       try {
+        const blob = await getFileBlob(file.storagePath);
         if (file.mimeType === 'application/pdf') {
-          // Use download URL directly for PDF — avoids CORS (iframe navigation)
-          const url = await getFileDownloadURL(file.storagePath);
-          setPdfUrl(url);
+          blobUrl = URL.createObjectURL(blob);
+          setPdfBlobUrl(blobUrl);
         } else if (file.mimeType === 'text/plain') {
-          const blob = await getFileBlob(file.storagePath);
           const text = await blob.text();
           setTextContent(text);
         } else if (
           file.mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
           file.mimeType === 'application/msword'
         ) {
-          const blob = await getFileBlob(file.storagePath);
           const mammoth = (await import('mammoth')).default;
           const arrayBuffer = await blob.arrayBuffer();
           const result = await mammoth.convertToHtml({ arrayBuffer });
@@ -48,6 +47,10 @@ export default function FileViewer({ file, onClose, onDownload }: FileViewerProp
     };
 
     loadContent();
+
+    return () => {
+      if (blobUrl) URL.revokeObjectURL(blobUrl);
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file]);
 
@@ -96,9 +99,9 @@ export default function FileViewer({ file, onClose, onDownload }: FileViewerProp
               <span>{error}</span>
             </div>
           </div>
-        ) : file.mimeType === 'application/pdf' && pdfUrl ? (
+        ) : file.mimeType === 'application/pdf' && pdfBlobUrl ? (
           <iframe
-            src={pdfUrl}
+            src={pdfBlobUrl}
             className="mx-auto h-full w-full max-w-4xl rounded bg-white"
             title={file.originalFileName}
           />

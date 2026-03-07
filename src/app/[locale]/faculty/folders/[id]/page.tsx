@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { useFacultyAuth } from '@/hooks/useFacultyAuth';
 import { useDocument, useQueryDocuments, useAddDocument, useUpdateDocument, useDeleteDocument } from '@/hooks/useFirestore';
-import { uploadFile, deleteFile as deleteStorageFile, generateUniqueFileName, getFileDownloadURL, ALLOWED_FILE_TYPES, MAX_FILE_SIZES, FACULTY_STORAGE_LIMIT_MB } from '@/lib/firebase/storage';
+import { uploadFile, deleteFile as deleteStorageFile, generateUniqueFileName, getFileBlob, ALLOWED_FILE_TYPES, MAX_FILE_SIZES, FACULTY_STORAGE_LIMIT_MB } from '@/lib/firebase/storage';
 import { updateDocument } from '@/lib/firebase/firestore';
 import type { FacultyFolder, FacultyFile, FacultyUser } from '@/types';
 import FileViewer from '@/components/faculty/FileViewer';
@@ -259,8 +259,15 @@ export default function FolderDetailPage() {
 
   const handleDownload = async (file: FacultyFile) => {
     try {
-      const url = await getFileDownloadURL(file.storagePath);
-      window.open(url, '_blank');
+      const blob = await getFileBlob(file.storagePath);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file.originalFileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Download error:', error);
     }
@@ -469,7 +476,17 @@ export default function FolderDetailPage() {
               >
                 <div className="col-span-5 flex items-center space-x-3 min-w-0">
                   {getFileIcon(file.mimeType)}
-                  <span className="text-sm font-medium truncate">{file.originalFileName}</span>
+                  {canPreview(file.mimeType) ? (
+                    <button
+                      onClick={() => setViewingFile(file)}
+                      className="text-sm font-medium truncate text-left hover:text-primary hover:underline"
+                      title={file.originalFileName}
+                    >
+                      {file.originalFileName}
+                    </button>
+                  ) : (
+                    <span className="text-sm font-medium truncate">{file.originalFileName}</span>
+                  )}
                 </div>
                 <div className="col-span-2 text-xs text-muted-foreground mt-1 sm:mt-0 truncate">
                   {getFriendlyType(file.mimeType)}
