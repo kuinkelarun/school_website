@@ -2,6 +2,7 @@ import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator, type Auth } from 'firebase/auth';
 import { getFirestore, connectFirestoreEmulator, type Firestore } from 'firebase/firestore';
 import { getStorage, connectStorageEmulator, type FirebaseStorage } from 'firebase/storage';
+import { getFunctions, connectFunctionsEmulator, type Functions } from 'firebase/functions';
 
 // Firebase configuration from environment variables
 const firebaseConfig = {
@@ -18,12 +19,14 @@ let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
 let storage: FirebaseStorage;
+let functions: Functions;
 
 if (!getApps().length) {
   app = initializeApp(firebaseConfig);
   auth = getAuth(app);
   db = getFirestore(app, 'janatamavi-db');
   storage = getStorage(app);
+  functions = getFunctions(app);
 
   // Connect to Firebase Emulators if enabled
   if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
@@ -49,12 +52,20 @@ if (!getApps().length) {
     } catch (error) {
       console.log('Storage emulator already connected');
     }
+
+    // Connect to Functions Emulator
+    try {
+      connectFunctionsEmulator(functions, 'localhost', 5001);
+    } catch (error) {
+      console.log('Functions emulator already connected');
+    }
   }
 } else {
   app = getApps()[0];
   auth = getAuth(app);
   db = getFirestore(app, 'janatamavi-db');
   storage = getStorage(app);
+  functions = getFunctions(app);
 }
 
-export { app, auth, db, storage };
+export { app, auth, db, storage, functions };

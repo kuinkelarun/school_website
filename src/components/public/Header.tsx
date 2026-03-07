@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogIn, ChevronDown } from 'lucide-react';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useDocument } from '@/hooks/useFirestore';
 import type { SiteSettings } from '@/types';
@@ -13,6 +13,19 @@ export function Header() {
   const t = useTranslations('nav');
   const locale = useLocale();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [loginDropdownOpen, setLoginDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setLoginDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Fetch site settings for school name & logo
   const { data: settings, loading: settingsLoading } = useDocument<SiteSettings>('siteSettings', 'main');
@@ -85,6 +98,36 @@ export function Header() {
             {/* Language Switcher */}
             <LanguageSwitcher />
 
+            {/* Login Dropdown */}
+            <div className="relative hidden md:block" ref={dropdownRef}>
+              <button
+                onClick={() => setLoginDropdownOpen(!loginDropdownOpen)}
+                className="flex items-center space-x-1 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted"
+              >
+                <LogIn className="h-4 w-4" />
+                <span>{t('login')}</span>
+                <ChevronDown className={cn('h-3 w-3 transition-transform', loginDropdownOpen && 'rotate-180')} />
+              </button>
+              {loginDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 rounded-lg border bg-card shadow-lg">
+                  <Link
+                    href={`/${locale}/login`}
+                    className="block px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted rounded-t-lg"
+                    onClick={() => setLoginDropdownOpen(false)}
+                  >
+                    {t('adminLogin')}
+                  </Link>
+                  <Link
+                    href={`/${locale}/faculty-login`}
+                    className="block px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted rounded-b-lg"
+                    onClick={() => setLoginDropdownOpen(false)}
+                  >
+                    {t('facultyLogin')}
+                  </Link>
+                </div>
+              )}
+            </div>
+
             {/* Mobile Menu Button */}
             <button
               className="md:hidden"
@@ -113,6 +156,22 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
+            <div className="mt-2 border-t pt-2">
+              <Link
+                href={`/${locale}/login`}
+                className="block px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {t('adminLogin')}
+              </Link>
+              <Link
+                href={`/${locale}/faculty-login`}
+                className="block px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {t('facultyLogin')}
+              </Link>
+            </div>
           </nav>
         )}
       </div>

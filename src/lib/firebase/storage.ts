@@ -2,6 +2,7 @@ import {
   ref,
   uploadBytesResumable,
   getDownloadURL,
+  getBlob,
   deleteObject,
   listAll,
   type UploadTaskSnapshot,
@@ -122,6 +123,22 @@ export async function getFileMetadata(path: string): Promise<any> {
 }
 
 /**
+ * Get a file blob from Firebase Storage (avoids CORS issues)
+ */
+export async function getFileBlob(storagePath: string): Promise<Blob> {
+  const storageRef = ref(storage, storagePath);
+  return getBlob(storageRef);
+}
+
+/**
+ * Get a download URL for a file in Firebase Storage
+ */
+export async function getFileDownloadURL(storagePath: string): Promise<string> {
+  const storageRef = ref(storage, storagePath);
+  return getDownloadURL(storageRef);
+}
+
+/**
  * Generate unique file name
  */
 export function generateUniqueFileName(originalName: string): string {
@@ -165,6 +182,7 @@ export const STORAGE_PATHS = {
   events: 'events',
   programs: 'programs',
   media: 'media',
+  facultyFiles: 'faculty-files',
 } as const;
 
 /**
@@ -174,6 +192,14 @@ export const ALLOWED_FILE_TYPES = {
   images: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
   documents: ['application/pdf'],
   all: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'],
+  faculty: [
+    'text/plain',
+    'application/pdf',
+    'application/zip',
+    'application/x-zip-compressed',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ],
 } as const;
 
 /**
@@ -182,4 +208,10 @@ export const ALLOWED_FILE_TYPES = {
 export const MAX_FILE_SIZES = {
   image: 5,
   document: 10,
+  facultyFile: 3,
 } as const;
+
+/**
+ * Faculty storage quota (in MB)
+ */
+export const FACULTY_STORAGE_LIMIT_MB = 50;
