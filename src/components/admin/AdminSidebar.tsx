@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import {
   LayoutDashboard,
   Image,
@@ -28,25 +28,26 @@ import { cn } from '@/lib/utils';
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const locale = useLocale();
   const t = useTranslations('admin.nav');
   const { signOut, adminUser } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { href: '/en/admin/dashboard', icon: LayoutDashboard, label: t('dashboard') },
-    { href: '/en/admin/hero-images', icon: Image, label: t('heroImages') },
-    { href: '/en/admin/announcements', icon: Megaphone, label: t('announcements') },
-    { href: '/en/admin/articles', icon: Newspaper, label: t('articles') },
-    { href: '/en/admin/events', icon: Calendar, label: t('events') },
-    { href: '/en/admin/programs', icon: GraduationCap, label: t('programs') },
-    { href: '/en/admin/faculty', icon: Users, label: t('faculty') },
-    { href: '/en/admin/media', icon: FolderOpen, label: t('media') },
-    { href: '/en/admin/gallery', icon: Images, label: t('gallery') },
-    { href: '/en/admin/about', icon: Info, label: t('about') },
-    { href: '/en/admin/messages', icon: Mail, label: t('messages') },
-    { href: '/en/admin/admin-users', icon: ShieldCheck, label: t('adminUsers') },
-    { href: '/en/admin/faculty-accounts', icon: UserCheck, label: t('facultyAccounts') },
-    { href: '/en/admin/site-settings', icon: Settings, label: t('siteSettings') },
+    { href: `/${locale}/admin/dashboard`, icon: LayoutDashboard, label: t('dashboard') },
+    { href: `/${locale}/admin/hero-images`, icon: Image, label: t('heroImages') },
+    { href: `/${locale}/admin/announcements`, icon: Megaphone, label: t('announcements') },
+    { href: `/${locale}/admin/articles`, icon: Newspaper, label: t('articles') },
+    { href: `/${locale}/admin/events`, icon: Calendar, label: t('events') },
+    { href: `/${locale}/admin/programs`, icon: GraduationCap, label: t('programs') },
+    { href: `/${locale}/admin/faculty`, icon: Users, label: t('faculty') },
+    { href: `/${locale}/admin/media`, icon: FolderOpen, label: t('media') },
+    { href: `/${locale}/admin/gallery`, icon: Images, label: t('gallery') },
+    { href: `/${locale}/admin/about`, icon: Info, label: t('about') },
+    { href: `/${locale}/admin/messages`, icon: Mail, label: t('messages') },
+    { href: `/${locale}/admin/admin-users`, icon: ShieldCheck, label: t('adminUsers') },
+    { href: `/${locale}/admin/faculty-accounts`, icon: UserCheck, label: t('facultyAccounts') },
+    { href: `/${locale}/admin/site-settings`, icon: Settings, label: t('siteSettings') },
   ];
 
   const handleSignOut = async () => {
@@ -61,7 +62,7 @@ export function AdminSidebar() {
     <div className="flex h-full flex-col">
       {/* Logo */}
       <div className="border-b p-6">
-        <Link href="/en/admin/dashboard" className="flex items-center space-x-2">
+        <Link href={`/${locale}/admin/dashboard`} className="flex items-center space-x-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
             <span className="text-xl font-bold">A</span>
           </div>
@@ -73,7 +74,7 @@ export function AdminSidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 p-4">
+      <nav className="min-h-0 flex-1 overflow-y-auto space-y-1 p-4">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
