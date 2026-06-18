@@ -7,7 +7,8 @@
       "**/node_modules/**"
     ],
     "frameworksBackend": {
-      "region": "asia-south2"
+      "region": "asia-south2",
+      "minInstances": 1
     }
   },
   "functions": {
